@@ -1,0 +1,76 @@
+"use client";
+
+import Link from "next/link";
+import { usePathname, useRouter } from "next/navigation";
+import { cn } from "@/lib/utils";
+import {
+  CreditCard,
+  LayoutDashboard,
+  Zap,
+  Bell,
+  PieChart,
+  LogOut,
+} from "lucide-react";
+
+const navItems = [
+  { href: "/dashboard", label: "Dashboard", icon: LayoutDashboard },
+  { href: "/optimizer", label: "Optimizer", icon: Zap },
+  { href: "/notifications", label: "Notifications", icon: Bell },
+  { href: "/portfolio", label: "Portfolio", icon: PieChart },
+];
+
+export default function Sidebar() {
+  const pathname = usePathname();
+  const router = useRouter();
+
+  async function handleSignOut() {
+    await fetch("/api/auth/logout", { method: "POST" });
+    router.push("/login");
+    router.refresh();
+  }
+
+  return (
+    <aside className="fixed inset-y-0 left-0 w-60 bg-white border-r border-gray-100 flex flex-col z-20">
+      {/* Logo */}
+      <div className="h-16 flex items-center gap-2.5 px-5 border-b border-gray-100">
+        <div className="w-8 h-8 bg-brand-600 rounded-lg flex items-center justify-center shrink-0">
+          <CreditCard className="w-4 h-4 text-white" />
+        </div>
+        <span className="text-lg font-bold text-gray-900">CardIQ</span>
+      </div>
+
+      {/* Navigation */}
+      <nav className="flex-1 px-3 py-4 space-y-0.5">
+        {navItems.map(({ href, label, icon: Icon }) => {
+          const active = pathname === href || pathname.startsWith(href + "/");
+          return (
+            <Link
+              key={href}
+              href={href}
+              className={cn(
+                "flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium transition-colors",
+                active
+                  ? "bg-brand-50 text-brand-700"
+                  : "text-gray-600 hover:bg-gray-50 hover:text-gray-900"
+              )}
+            >
+              <Icon className={cn("w-4 h-4", active ? "text-brand-600" : "text-gray-400")} />
+              {label}
+            </Link>
+          );
+        })}
+      </nav>
+
+      {/* Sign out */}
+      <div className="px-3 pb-4">
+        <button
+          onClick={handleSignOut}
+          className="flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium text-gray-500 hover:bg-gray-50 hover:text-gray-700 transition-colors w-full text-left"
+        >
+          <LogOut className="w-4 h-4 text-gray-400" />
+          Sign out
+        </button>
+      </div>
+    </aside>
+  );
+}
