@@ -89,7 +89,18 @@ export default function PortfolioPage() {
     });
 
     const data = await res.json();
-    setAiAdvice(data.advice ?? "Unable to generate advice at this time.");
+    // Handle structured PortfolioAdvice response
+    if (data.overallSummary) {
+      const cardLines = (data.cards || []).map(
+        (c: { cardName: string; recommendation: string; rationale: string; netROI: string }) =>
+          `${c.cardName}: ${c.recommendation.toUpperCase()} — ${c.rationale} (Net: ${c.netROI})`
+      );
+      const confidence = data.confidence ? `\n\n[${data.confidence} confidence]` : "";
+      const tradeoffs = data.tradeoffs ? `\n\nTradeoffs: ${data.tradeoffs}` : "";
+      setAiAdvice(`${cardLines.join("\n")}\n\n${data.overallSummary}${tradeoffs}${confidence}`);
+    } else {
+      setAiAdvice(data.advice ?? "Unable to generate advice at this time.");
+    }
     setAiLoading(false);
   }
 

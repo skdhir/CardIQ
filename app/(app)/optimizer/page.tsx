@@ -70,7 +70,14 @@ export default function OptimizerPage() {
       }),
     });
     const data = await res.json();
-    setAiResult(data.recommendation ?? "Unable to get a recommendation.");
+    // Handle structured CardRecommendation response
+    if (data.recommendedCard) {
+      const confidence = data.confidence ? ` [${data.confidence} confidence]` : "";
+      const impact = data.estimatedImpact ? `\n${data.estimatedImpact}` : "";
+      setAiResult(`Use your ${data.recommendedCard}. ${data.rationale}${impact}${confidence}`);
+    } else {
+      setAiResult(data.recommendation ?? "Unable to get a recommendation.");
+    }
     setAiLoading(false);
   }
 

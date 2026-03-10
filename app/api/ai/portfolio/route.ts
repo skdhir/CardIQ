@@ -9,8 +9,8 @@ export async function POST(request: Request) {
   }
 
   try {
-    const advice = await getPortfolioAdvice(cards);
-    return NextResponse.json({ advice });
+    const result = await getPortfolioAdvice(cards);
+    return NextResponse.json(result);
   } catch (err) {
     console.error("Claude API error:", err);
     return NextResponse.json(

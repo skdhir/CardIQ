@@ -10,13 +10,13 @@ export async function POST(request: Request) {
   }
 
   try {
-    const explanation = await explainBenefit(
+    const result = await explainBenefit(
       benefitName,
       cardName,
-      description,
-      redemptionInstructions
+      description || "",
+      redemptionInstructions || ""
     );
-    return NextResponse.json({ explanation });
+    return NextResponse.json(result);
   } catch (err) {
     console.error("Claude API error:", err);
     return NextResponse.json(

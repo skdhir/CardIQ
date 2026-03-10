@@ -9,8 +9,8 @@ export async function POST(request: Request) {
   }
 
   try {
-    const recommendation = await getCardRecommendation(merchant, category, userCards);
-    return NextResponse.json({ recommendation });
+    const result = await getCardRecommendation(merchant, category, userCards);
+    return NextResponse.json(result);
   } catch (err) {
     console.error("Claude API error:", err);
     return NextResponse.json(
