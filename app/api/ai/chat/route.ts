@@ -3,34 +3,19 @@ import Anthropic from "@anthropic-ai/sdk";
 import { getSession } from "@/lib/auth";
 import { getUserById, getUserCards } from "@/lib/db";
 import { CARD_CATALOG } from "@/lib/mock-data/cards";
+import { MODEL, SYSTEM_INSTRUCTION } from "@/lib/claude";
 
 const anthropic = new Anthropic({
   apiKey: process.env.ANTHROPIC_API_KEY!,
 });
 
-const MODEL = "claude-sonnet-4-6";
+const CHAT_ADDENDUM = `
 
-const SYSTEM_PROMPT = `You are CardIQ Support, a friendly and knowledgeable customer support agent for CardIQ — an app that helps people maximize their credit card benefits.
-
-You help users:
-- Understand their credit card benefits and how to use them
-- Figure out which card to use for specific purchases
-- Track and maximize annual credits (dining, travel, streaming, etc.)
-- Understand terms and conditions of card benefits
-- Navigate the CardIQ app (dashboard, portfolio, optimizer, notifications)
-
-Guidelines:
-- Be concise and conversational. Avoid long walls of text.
-- If the user asks about their specific cards, reference them by name if provided.
-- When discussing dollar amounts, be specific and practical.
-- If you don't know something specific about a card, say so and suggest checking the issuer's website.
-- Do not give financial, legal, or tax advice. Direct those questions to qualified professionals.
-- Keep responses to 2-4 sentences unless a detailed explanation is truly needed.
-
-IMPORTANT DISCLAIMERS:
-- You provide general information about credit card benefits, not personalized financial advice.
-- Always recommend users verify specific terms and conditions with their card issuer.
-- Never make guarantees about financial outcomes or savings amounts.`;
+CHAT-SPECIFIC GUIDELINES:
+- Be concise and conversational. Keep responses to 2-4 sentences unless a detailed explanation is truly needed.
+- If the user asks about their specific cards, reference them by name if provided in the context.
+- Help users navigate the CardIQ app (dashboard, portfolio, optimizer, notifications).
+- When discussing dollar amounts, be specific and practical.`;
 
 export async function POST(request: Request) {
   const session = await getSession();
@@ -58,7 +43,7 @@ export async function POST(request: Request) {
     // Non-critical — proceed without user context
   }
 
-  const systemWithContext = SYSTEM_PROMPT + userContext;
+  const systemWithContext = SYSTEM_INSTRUCTION + CHAT_ADDENDUM + userContext;
 
   // Validate and sanitize messages
   const sanitizedMessages = messages

@@ -4,7 +4,7 @@ const anthropic = new Anthropic({
   apiKey: process.env.ANTHROPIC_API_KEY!,
 });
 
-const MODEL = "claude-sonnet-4-6";
+export const MODEL = "claude-sonnet-4-6";
 
 // ═══════════════════════════════════════════════════════════════════════════
 // TIER 1 — SYSTEM INSTRUCTION (Immutable)
@@ -12,7 +12,7 @@ const MODEL = "claude-sonnet-4-6";
 // This layer has the highest priority and cannot be overridden by user input.
 // ═══════════════════════════════════════════════════════════════════════════
 
-const SYSTEM_INSTRUCTION = `You are CardIQ, an AI credit card benefits optimization assistant. Your role is to help users maximize the value of their existing credit cards by tracking benefits, recommending optimal card usage per purchase, and evaluating portfolio ROI.
+export const SYSTEM_INSTRUCTION = `You are CardIQ, an AI credit card benefits optimization assistant. Your role is to help users maximize the value of their existing credit cards by tracking benefits, recommending optimal card usage per purchase, and evaluating portfolio ROI.
 
 SCOPE — You may ONLY advise on:
 - Credit card benefit tracking and redemption (statement credits, perks, protections, memberships)
@@ -43,6 +43,18 @@ LANGUAGE RULES:
 - PROHIBITED: "You should definitely use this credit — you're wasting money if you don't."
 - ACCEPTABLE: "Your Amex Platinum captured $1,100 in benefits against a $895 annual fee, a net positive of $205."
 - PROHIBITED: "Cancel your Sapphire Reserve immediately — it's a bad card."
+- ACCEPTABLE: "Based on tracked benefits, your estimated annual value is approximately $1,200. Actual value may vary."
+- PROHIBITED: "You will save exactly $1,200 this year with your current cards."
+- ACCEPTABLE: "Your Chase Sapphire Reserve earns 3x on dining, while your Amex Gold earns 4x. For this restaurant purchase, the Amex Gold would earn more points."
+- PROHIBITED: "The Amex Gold is the best dining card — everyone should use it over the Sapphire Reserve."
+- ACCEPTABLE: "Consider calling your issuer to ask about retention offers before making a downgrade decision."
+- PROHIBITED: "You need to cancel this card right now — you're losing money every month."
+- ACCEPTABLE: "I can help you track and optimize your existing card benefits. For questions about applying for new cards, check your issuer's website or consult a financial advisor."
+- PROHIBITED: "You should apply for the Chase Sapphire Preferred — it has a great signup bonus right now."
+- ACCEPTABLE: "This analysis covers tracked benefits only. Other factors like retention offers, signup bonus cycles, and credit score impact are not included."
+- PROHIBITED: "This is a complete analysis of your card's value — there's nothing else to consider."
+- ACCEPTABLE: "Your data was last verified within 30 days. For the most current terms, confirm with your card issuer."
+- PROHIBITED: "These terms are guaranteed to be accurate and up-to-date."
 
 REFUSAL RULES:
 - If a user asks about something outside your scope, decline politely, explain why, and redirect to what you CAN help with.
@@ -264,6 +276,8 @@ export async function getPortfolioAdvice(
 
 [USER REQUEST]
 Analyze my credit card portfolio. For each card, tell me whether I should keep it, consider downgrading, or evaluate further. Then give me an overall portfolio summary.
+
+Important: This analysis covers only tracked benefits captured in CardIQ. Your overallSummary MUST note that other factors not included in this analysis — such as retention offers from issuers, signup bonus eligibility, credit score impact, relationship value with the bank, and future spending changes — may affect the decision. Do not present this as a complete financial analysis.
 
 Respond in this exact JSON format:
 {

@@ -5,6 +5,8 @@ import type { CardCatalogEntry, CardROI } from "@/types";
 import { formatCurrency } from "@/lib/utils";
 import ProgressBar from "@/components/ui/ProgressBar";
 import { Sparkles, Loader2, TrendingUp, TrendingDown, Minus, RefreshCw } from "lucide-react";
+import ConfidenceWarning from "@/components/ui/ConfidenceWarning";
+import ReportIssueButton from "@/components/ui/ReportIssueButton";
 
 interface BenefitTrackingItem {
   benefitId: string;
@@ -18,6 +20,7 @@ export default function PortfolioPage() {
   const [cards, setCards] = useState<CardCatalogEntry[]>([]);
   const [loading, setLoading] = useState(true);
   const [aiAdvice, setAiAdvice] = useState("");
+  const [aiConfidence, setAiConfidence] = useState<"HIGH" | "MEDIUM" | "LOW">("HIGH");
   const [aiLoading, setAiLoading] = useState(false);
   const [roiCards, setRoiCards] = useState<CardROI[]>([]);
 
@@ -91,14 +94,15 @@ export default function PortfolioPage() {
     const data = await res.json();
     // Handle structured PortfolioAdvice response
     if (data.overallSummary) {
+      if (data.confidence) setAiConfidence(data.confidence);
       const cardLines = (data.cards || []).map(
         (c: { cardName: string; recommendation: string; rationale: string; netROI: string }) =>
           `${c.cardName}: ${c.recommendation.toUpperCase()} — ${c.rationale} (Net: ${c.netROI})`
       );
-      const confidence = data.confidence ? `\n\n[${data.confidence} confidence]` : "";
       const tradeoffs = data.tradeoffs ? `\n\nTradeoffs: ${data.tradeoffs}` : "";
-      setAiAdvice(`${cardLines.join("\n")}\n\n${data.overallSummary}${tradeoffs}${confidence}`);
+      setAiAdvice(`${cardLines.join("\n")}\n\n${data.overallSummary}${tradeoffs}`);
     } else {
+      setAiConfidence("LOW");
       setAiAdvice(data.advice ?? "Unable to generate advice at this time.");
     }
     setAiLoading(false);
@@ -252,7 +256,9 @@ export default function PortfolioPage() {
         {aiAdvice && !aiLoading && (
           <div className="bg-gradient-to-br from-brand-50 to-indigo-50 rounded-xl p-4 text-sm text-gray-700 leading-relaxed whitespace-pre-line">
             {aiAdvice}
+            <ConfidenceWarning confidence={aiConfidence} />
             <p className="text-[10px] text-gray-400 mt-3">CardIQ provides information, not financial advice. Verify terms with your card issuer.</p>
+            <ReportIssueButton context="portfolio:analysis" />
           </div>
         )}
       </div>

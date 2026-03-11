@@ -4,6 +4,8 @@ import { useEffect, useState } from "react";
 import type { Transaction, CardCatalogEntry } from "@/types";
 import { formatCurrency, formatDate } from "@/lib/utils";
 import { CheckCircle, AlertTriangle, Loader2, Sparkles, ChevronDown, ChevronUp } from "lucide-react";
+import ConfidenceWarning from "@/components/ui/ConfidenceWarning";
+import ReportIssueButton from "@/components/ui/ReportIssueButton";
 
 const CATEGORY_LABELS: Record<string, string> = {
   dining: "Dining",
@@ -22,6 +24,7 @@ export default function OptimizerPage() {
   const [filter, setFilter] = useState<"all" | "suboptimal">("all");
   const [aiQuery, setAiQuery] = useState("");
   const [aiResult, setAiResult] = useState("");
+  const [aiConfidence, setAiConfidence] = useState<"HIGH" | "MEDIUM" | "LOW">("HIGH");
   const [aiLoading, setAiLoading] = useState(false);
   const [expandedId, setExpandedId] = useState<string | null>(null);
   const [userCards, setUserCards] = useState<CardCatalogEntry[]>([]);
@@ -75,10 +78,11 @@ export default function OptimizerPage() {
     const data = await res.json();
     // Handle structured CardRecommendation response
     if (data.recommendedCard) {
-      const confidence = data.confidence ? ` [${data.confidence} confidence]` : "";
+      if (data.confidence) setAiConfidence(data.confidence);
       const impact = data.estimatedImpact ? `\n${data.estimatedImpact}` : "";
-      setAiResult(`Use your ${data.recommendedCard}. ${data.rationale}${impact}${confidence}`);
+      setAiResult(`Use your ${data.recommendedCard}. ${data.rationale}${impact}`);
     } else {
+      setAiConfidence("LOW");
       setAiResult(data.recommendation ?? "Unable to get a recommendation.");
     }
     setAiLoading(false);
@@ -142,7 +146,9 @@ export default function OptimizerPage() {
         {aiResult && (
           <div className="mt-3 bg-brand-50 rounded-xl p-3 text-sm text-gray-700 leading-relaxed">
             {aiResult}
+            <ConfidenceWarning confidence={aiConfidence} />
             <p className="text-[10px] text-gray-400 mt-2">CardIQ provides information, not financial advice. Verify terms with your card issuer.</p>
+            <ReportIssueButton context={`optimizer:${aiQuery}`} />
           </div>
         )}
       </div>

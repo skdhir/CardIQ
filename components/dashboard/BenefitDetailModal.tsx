@@ -4,6 +4,8 @@ import { useEffect, useState } from "react";
 import { X, Sparkles, Loader2, CheckCircle } from "lucide-react";
 import type { CardBenefit, BenefitStatus } from "@/types";
 import Badge from "@/components/ui/Badge";
+import ConfidenceWarning from "@/components/ui/ConfidenceWarning";
+import ReportIssueButton from "@/components/ui/ReportIssueButton";
 import { formatCurrency, getDaysUntil } from "@/lib/utils";
 
 interface BenefitDetailModalProps {
@@ -24,6 +26,7 @@ export default function BenefitDetailModal({
   onMarkUsed,
 }: BenefitDetailModalProps) {
   const [explanation, setExplanation] = useState<string>("");
+  const [confidence, setConfidence] = useState<"HIGH" | "MEDIUM" | "LOW">("HIGH");
   const [loadingAI, setLoadingAI] = useState(false);
   const [marking, setMarking] = useState(false);
   const [marked, setMarked] = useState(false);
@@ -47,6 +50,7 @@ export default function BenefitDetailModal({
       .then((data) => {
         if (!cancelled) {
           setExplanation(data.explanation ?? benefit.description);
+          if (data.confidence) setConfidence(data.confidence);
           setLoadingAI(false);
         }
       })
@@ -128,7 +132,9 @@ export default function BenefitDetailModal({
             ) : (
               <p className="text-sm text-gray-700 leading-relaxed">{explanation}</p>
             )}
+            <ConfidenceWarning confidence={confidence} />
             <p className="text-[10px] text-gray-400 mt-2">CardIQ provides information, not financial advice. Verify terms with your card issuer.</p>
+            <ReportIssueButton context={`benefit:${benefit.id}`} />
           </div>
 
           {/* Redemption Instructions */}
