@@ -187,7 +187,7 @@ export default function PortfolioPage() {
               </div>
 
               {/* Stats */}
-              <div className="grid grid-cols-3 gap-4 mb-4">
+              <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-4">
                 <div>
                   <p className="text-xs text-gray-400 mb-0.5">Benefits available</p>
                   <p className="text-lg font-bold text-gray-900">{formatCurrency(roi.totalBenefitValue)}</p>

@@ -12,6 +12,8 @@ import {
   PieChart,
   UserCircle,
   LogOut,
+  Menu,
+  X,
 } from "lucide-react";
 
 const navItems = [
@@ -26,6 +28,7 @@ export default function Sidebar() {
   const pathname = usePathname();
   const router = useRouter();
   const [userName, setUserName] = useState<string | null>(null);
+  const [mobileOpen, setMobileOpen] = useState(false);
 
   useEffect(() => {
     fetch("/api/auth/me")
@@ -34,20 +37,32 @@ export default function Sidebar() {
       .catch(() => {});
   }, []);
 
+  // Close mobile nav on route change
+  useEffect(() => {
+    setMobileOpen(false);
+  }, [pathname]);
+
   async function handleSignOut() {
     await fetch("/api/auth/logout", { method: "POST" });
     router.push("/login");
     router.refresh();
   }
 
-  return (
-    <aside className="fixed inset-y-0 left-0 w-60 bg-white border-r border-gray-100 flex flex-col z-20">
+  const sidebarContent = (
+    <>
       {/* Logo */}
       <div className="h-16 flex items-center gap-2.5 px-5 border-b border-gray-100">
         <div className="w-8 h-8 bg-brand-600 rounded-lg flex items-center justify-center shrink-0">
           <CreditCard className="w-4 h-4 text-white" />
         </div>
         <span className="text-lg font-bold text-gray-900">CardIQ</span>
+        {/* Mobile close button */}
+        <button
+          onClick={() => setMobileOpen(false)}
+          className="ml-auto md:hidden p-1.5 hover:bg-gray-100 rounded-lg"
+        >
+          <X className="w-5 h-5 text-gray-500" />
+        </button>
       </div>
 
       {/* Greeting */}
@@ -89,6 +104,45 @@ export default function Sidebar() {
           Sign out
         </button>
       </div>
-    </aside>
+    </>
+  );
+
+  return (
+    <>
+      {/* Mobile top bar */}
+      <div className="fixed top-0 left-0 right-0 h-14 bg-white border-b border-gray-100 flex items-center px-4 z-30 md:hidden">
+        <button
+          onClick={() => setMobileOpen(true)}
+          className="p-1.5 hover:bg-gray-100 rounded-lg"
+        >
+          <Menu className="w-5 h-5 text-gray-700" />
+        </button>
+        <div className="flex items-center gap-2 ml-3">
+          <div className="w-7 h-7 bg-brand-600 rounded-lg flex items-center justify-center">
+            <CreditCard className="w-3.5 h-3.5 text-white" />
+          </div>
+          <span className="text-base font-bold text-gray-900">CardIQ</span>
+        </div>
+      </div>
+
+      {/* Mobile overlay */}
+      {mobileOpen && (
+        <div
+          className="fixed inset-0 bg-black/30 z-40 md:hidden"
+          onClick={() => setMobileOpen(false)}
+        />
+      )}
+
+      {/* Sidebar — desktop: always visible, mobile: drawer */}
+      <aside
+        className={cn(
+          "fixed inset-y-0 left-0 w-60 bg-white border-r border-gray-100 flex flex-col z-50 transition-transform duration-200",
+          "md:translate-x-0",
+          mobileOpen ? "translate-x-0" : "-translate-x-full md:translate-x-0"
+        )}
+      >
+        {sidebarContent}
+      </aside>
+    </>
   );
 }
