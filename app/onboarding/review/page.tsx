@@ -124,15 +124,39 @@ function ReviewBenefitsContent() {
       }
     }
 
-    await Promise.all(
-      patches.map(({ id, dollarValue }) =>
+    // Collect card IDs from the onboarding flow
+    const onboardingCardIds = cardGroups.map((g) => g.card.id);
+
+    // Save cards + benefits via API
+    await Promise.all([
+      ...onboardingCardIds.map((cardId) =>
+        fetch("/api/cards/user", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ cardId }),
+        })
+      ),
+      ...patches.map(({ id }) =>
         fetch(`/api/benefits/${id}`, {
           method: "PATCH",
           headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ status: "used", amountUsed: dollarValue }),
+          body: JSON.stringify({ status: "unused", amountUsed: 0 }),
         })
-      )
-    );
+      ),
+    ]);
+
+    // Persist onboarding data in localStorage as a fallback for serverless
+    // (Lambda instances have ephemeral filesystems — this ensures the dashboard
+    // can re-hydrate user data if it lands on a different instance)
+    try {
+      localStorage.setItem(
+        "cardiq_onboarding",
+        JSON.stringify({
+          cards: onboardingCardIds,
+          benefits: patches.map(({ id }) => ({ id, status: "unused", amountUsed: 0 })),
+        })
+      );
+    } catch { /* localStorage unavailable — API calls are the primary path */ }
 
     router.push("/dashboard");
   }
