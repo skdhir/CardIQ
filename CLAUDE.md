@@ -19,7 +19,7 @@ CardIQ is a credit card benefits optimization platform — an AI-powered tool th
 - **Styling:** Tailwind CSS 3.4
 - **Backend:** Next.js API routes (no separate server)
 - **Storage:** File-based JSON (`.data/` directory) — no external database
-- **AI:** Anthropic Claude API (claude-sonnet-4-5-20250929) via `@anthropic-ai/sdk`
+- **AI:** Anthropic Claude API (claude-sonnet-4-6) via `@anthropic-ai/sdk`
 - **Auth:** JWT (jose) + bcryptjs + HTTP-only cookies
 - **Icons:** Lucide React
 

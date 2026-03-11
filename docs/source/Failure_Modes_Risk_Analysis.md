@@ -151,6 +151,20 @@ Per course requirements, this analysis explicitly addresses **user misuse risks*
 
 ---
 
+### FM-10 — Regulatory Enforcement or Classification Change
+
+| Attribute | Detail |
+|-----------|--------|
+| **Category** | Regulatory / Legal Risk |
+| **Severity** | CRITICAL |
+| **Likelihood** | LOW (but impact is existential if it occurs) |
+| **Description** | A regulatory body (CFPB, SEC, state AG) determines that CardIQ's outputs constitute "financial advice" rather than "informational decision support," triggering registration requirements, compliance obligations, or enforcement action. Alternatively, new regulations targeting AI-generated financial content could impose requirements not anticipated in the current design. |
+| **Example** | The CFPB issues guidance that any AI tool providing card-specific keep/cancel/downgrade recommendations must register as a financial advisor under state regulations. CardIQ's portfolio strategy feature — which says "evaluate whether a downgrade makes sense" — could be interpreted as personalized financial advice rather than informational support. |
+| **Mitigation** | 1. All outputs use informational framing ("based on tracked benefits, your card captured $X") — never directive language ("you should cancel"). 2. Prominent disclaimers on every AI surface: "CardIQ provides information, not financial advice." 3. Terms of Service explicitly disclaim advisory relationship. 4. Quarterly legal review of output language against evolving regulatory guidance. 5. System instruction enforces advice-vs-information distinction at the model level (cannot be overridden by user input). 6. Architecture supports rapid feature disabling — any recommendation class can be paused within hours if regulatory concern arises. |
+| **Residual Risk** | Regulatory interpretation is inherently uncertain. The advice-vs-information line is not precisely defined in current law for AI-generated financial content. Ongoing legal monitoring is required. |
+
+---
+
 ## 3. Risk Summary Matrix
 
 | ID | Failure Mode | Severity | Likelihood | Mitigated? |
@@ -164,6 +178,7 @@ Per course requirements, this analysis explicitly addresses **user misuse risks*
 | FM-07 | User gaming benefit tracking | LOW | LOW-MED | Yes — Plaid verification where available |
 | FM-08 | Reputational risk (shared recs) | MEDIUM | MEDIUM | Partial — footer disclaimers |
 | FM-09 | Wrong card selected at onboarding | HIGH | LOW-MED | Yes — confirmation step + Plaid auto-ID |
+| FM-10 | Regulatory enforcement / classification change | CRITICAL | LOW | Partial — informational framing + disclaimers + legal review |
 
 ---
 

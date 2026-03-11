@@ -65,6 +65,23 @@ This log documents all AI tools used in the development of the CardIQ platform a
 
 - **Human input:** All structural requirements, the decision to align everything to benefits optimization (Option A), the specific test case scenarios, all compliance frameworks to include, role definitions
 - **AI contribution:** Document drafting, prose, formatting, detailed examples
+- *Note: This session produced the initial 7 test cases and 9 failure modes. Later sessions (3.6) expanded to 10 test cases and 10 failure modes.*
+
+### 3.6 Rubric Alignment & Guardrail Hardening
+
+**Prompt (Claude Code, rubric audit session):**
+> "Do a detailed check against what is asked and against rubric in this capstone project. Create tracker items for gaps. Do the code fixes first, then update docs."
+
+- **Human input:** Decision to audit against rubric, prioritization of code-level fixes before doc updates, approval of each fix (P1–P5)
+- **AI contribution:** Gap identification, implementation of ConfidenceWarning component, ReportIssueButton component, report API endpoint, prohibited terms list, chat endpoint alignment with main SYSTEM_INSTRUCTION, additional test cases (TC-8/9/10), FM-10, RACI matrix, reproducibility analysis
+
+### 3.7 Final Deliverable Packaging
+
+**Prompt (Claude Code, final packaging session):**
+> "Update all md files under docs. Move deliverables to docs/deliverables/. Regenerate/update so I can zip and send. Create a Q&A preparation document for the Shark Tank presentation."
+
+- **Human input:** Decision to create submission-ready package, requirement for Q&A preparation document
+- **AI contribution:** Document finalization, deliverable organization, Q&A prep content
 
 ---
 
@@ -84,12 +101,16 @@ This log documents all AI tools used in the development of the CardIQ platform a
 | Tone-by-segment design | **Human** | Human defined segments and tone direction |
 | All application code (Next.js, API routes, DB) | AI (human-supervised) | Claude Code generated; human tested and reviewed |
 | Card terms database (20 cards) | Human + AI | Human selected cards and verified terms; AI structured the data |
-| Test case design and expected behavior | **Human** | All 7 test cases and expected behaviors human-designed |
+| Test case design and expected behavior | **Human** | All 10 test cases and expected behaviors human-designed |
 | Test execution and results documentation | Human + AI | Tests run by student; AI helped document results |
 | Failure modes identification | Human + AI | Human identified categories; AI expanded examples and mitigations |
 | Compliance framework (CARD Act, TILA, Plaid) | **Human** | Human identified relevant regulations; AI drafted language |
 | HITL role definitions | **Human** | Human defined roles, responsibilities, and cadences |
 | Executive one-pager | Human + AI | Human defined structure and key messages; AI drafted prose |
+| ConfidenceWarning + ReportIssueButton components | AI (human-supervised) | Human specified requirements; AI implemented; human tested |
+| Prohibited terms list in system instruction | **Human** | All prohibited terms selected by human judgment |
+| RACI ownership matrix | **Human** | Human defined all roles and responsibilities |
+| Reproducibility & variance analysis | Human + AI | Human directed testing methodology; AI documented results |
 | All final markdown deliverables | AI (human-supervised) | Claude Code drafted; student reviewed and approved |
 | This transparency log | Human + AI | Human defined categories; AI drafted; human reviewed |
 

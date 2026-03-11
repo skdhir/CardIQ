@@ -28,11 +28,12 @@ The AI engine (Claude API) reasons across the user's full card portfolio, ground
 
 | Risk | Control |
 |------|---------|
-| **AI hallucination of card terms** | Every cited term validated against verified database. Monthly red-team audits. Documented in Test Case 7. |
-| **User treats output as financial advice** | Every recommendation includes: "CardIQ provides information, not financial advice." Advice vs. information distinction in onboarding. |
+| **AI hallucination of card terms** | Every cited term validated against verified database. Monthly red-team audits. Documented in Test Case 7 (v1 failure → v2 pass). |
+| **User treats output as financial advice** | Every AI output includes disclaimer: "CardIQ provides information, not financial advice." Confidence badges (HIGH/MEDIUM/LOW) on all recommendations. "Report an Issue" button on every AI surface. |
 | **Stale benefit data** | Weekly DB review cycle. Automated change detection on issuer pages. User-facing "last verified" dates. |
-| **Prompt injection / misuse** | 3-tier instruction hierarchy with immutable system guardrails. Injection attempts logged, ignored, and redirected. |
-| **Scope creep into regulated territory** | Hard prohibitions on investment advice, credit repair, loan origination, and new card recommendations. Enforced at system instruction level. |
+| **Prompt injection / misuse** | 3-tier instruction hierarchy with immutable system guardrails. Injection attempts ignored and redirected. Tested in TC-3. |
+| **Scope creep into regulated territory** | Hard prohibitions on investment advice, credit repair, loan origination, and new card recommendations. Prohibited terms list enforced at system instruction level. |
+| **Regulatory classification risk** | All outputs use informational framing. Quarterly legal review. Architecture supports rapid feature disabling if regulatory concern arises. |
 
 ## What CardIQ Will and Will Not Do
 
