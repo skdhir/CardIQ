@@ -8,10 +8,10 @@ function generateId(): string {
 }
 
 export async function POST(request: Request) {
-  const { email, password } = await request.json();
+  const { name, email, password } = await request.json();
 
-  if (!email || !password) {
-    return NextResponse.json({ error: "Email and password required" }, { status: 400 });
+  if (!name || !email || !password) {
+    return NextResponse.json({ error: "Name, email and password required" }, { status: 400 });
   }
 
   if (password.length < 8) {
@@ -27,6 +27,7 @@ export async function POST(request: Request) {
   const user = {
     id: generateId(),
     email,
+    name: name.trim(),
     passwordHash,
     createdAt: new Date().toISOString(),
   };

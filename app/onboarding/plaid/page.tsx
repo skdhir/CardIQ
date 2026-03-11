@@ -191,10 +191,10 @@ export default function PlaidOnboardingPage() {
             </div>
 
             <button
-              onClick={() => router.push("/dashboard")}
+              onClick={() => router.push(`/onboarding/review?cards=${ALL_PLAID_CARDS.join(",")}`)}
               className="btn-primary w-full py-2.5"
             >
-              Go to my Dashboard
+              Review my benefits
             </button>
           </div>
         )}

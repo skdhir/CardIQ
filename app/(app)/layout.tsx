@@ -1,4 +1,5 @@
 import Sidebar from "@/components/layout/Sidebar";
+import ChatWidget from "@/components/ChatWidget";
 
 export default function AppLayout({ children }: { children: React.ReactNode }) {
   return (
@@ -7,6 +8,7 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
       <main className="flex-1 ml-60 overflow-auto">
         <div className="max-w-5xl mx-auto px-8 py-8">{children}</div>
       </main>
+      <ChatWidget />
     </div>
   );
 }

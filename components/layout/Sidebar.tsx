@@ -1,8 +1,8 @@
 "use client";
 
-import { useEffect, useState } from "react";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
+import { useEffect, useState } from "react";
 import { cn } from "@/lib/utils";
 import {
   CreditCard,
@@ -10,8 +10,8 @@ import {
   Zap,
   Bell,
   PieChart,
+  UserCircle,
   LogOut,
-  User,
 } from "lucide-react";
 
 const navItems = [
@@ -19,17 +19,18 @@ const navItems = [
   { href: "/optimizer", label: "Optimizer", icon: Zap },
   { href: "/notifications", label: "Notifications", icon: Bell },
   { href: "/portfolio", label: "Portfolio", icon: PieChart },
+  { href: "/profile", label: "Profile", icon: UserCircle },
 ];
 
 export default function Sidebar() {
   const pathname = usePathname();
   const router = useRouter();
-  const [userEmail, setUserEmail] = useState("");
+  const [userName, setUserName] = useState<string | null>(null);
 
   useEffect(() => {
     fetch("/api/auth/me")
       .then((r) => r.json())
-      .then((data) => { if (data.email) setUserEmail(data.email); })
+      .then((data) => { if (data.name) setUserName(data.name); })
       .catch(() => {});
   }, []);
 
@@ -48,6 +49,13 @@ export default function Sidebar() {
         </div>
         <span className="text-lg font-bold text-gray-900">CardIQ</span>
       </div>
+
+      {/* Greeting */}
+      {userName && (
+        <div className="px-5 py-3 border-b border-gray-100">
+          <p className="text-sm text-gray-500">Hi, <span className="font-semibold text-gray-900">{userName}</span></p>
+        </div>
+      )}
 
       {/* Navigation */}
       <nav className="flex-1 px-3 py-4 space-y-0.5">
@@ -71,14 +79,8 @@ export default function Sidebar() {
         })}
       </nav>
 
-      {/* User + Sign out */}
-      <div className="px-3 pb-4 space-y-1">
-        {userEmail && (
-          <div className="flex items-center gap-3 px-3 py-2.5 text-sm text-gray-600">
-            <User className="w-4 h-4 text-gray-400 shrink-0" />
-            <span className="truncate">{userEmail}</span>
-          </div>
-        )}
+      {/* Sign out */}
+      <div className="px-3 pb-4">
         <button
           onClick={handleSignOut}
           className="flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium text-gray-500 hover:bg-gray-50 hover:text-gray-700 transition-colors w-full text-left"

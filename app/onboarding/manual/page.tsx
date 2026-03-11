@@ -60,7 +60,8 @@ export default function ManualOnboardingPage() {
         });
         if (!res.ok) throw new Error("Failed to add card");
       }
-      router.push("/dashboard");
+      const cardIds = Array.from(selected).join(",");
+      router.push(`/onboarding/review?cards=${cardIds}`);
     } catch {
       setError("Something went wrong. Please try again.");
       setSaving(false);

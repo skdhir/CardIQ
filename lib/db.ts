@@ -26,6 +26,7 @@ function ensureDir() {
 export interface StoredUser {
   id: string;
   email: string;
+  name: string;
   passwordHash: string;
   createdAt: string;
 }
@@ -58,6 +59,7 @@ function ensureDemoData() {
     users.push({
       id: customer.id,
       email: customer.email,
+      name: customer.name,
       passwordHash,
       createdAt: new Date().toISOString(),
     });
@@ -103,6 +105,25 @@ export function createUser(user: StoredUser) {
   const users = readUsers();
   users.push(user);
   writeUsers(users);
+}
+
+export function updateUser(id: string, updates: Partial<Pick<StoredUser, "name" | "email" | "passwordHash">>) {
+  const users = readUsers();
+  const idx = users.findIndex((u) => u.id === id);
+  if (idx === -1) return false;
+  users[idx] = { ...users[idx], ...updates };
+  writeUsers(users);
+  return true;
+}
+
+export function deleteUser(id: string) {
+  const users = readUsers();
+  const filtered = users.filter((u) => u.id !== id);
+  writeUsers(filtered);
+  const p = userDataPath(id);
+  try {
+    if (fs.existsSync(p)) fs.unlinkSync(p);
+  } catch { /* ignore */ }
 }
 
 // ─── Per-user data ───────────────────────────────────────────────────────────

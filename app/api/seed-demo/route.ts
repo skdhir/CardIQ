@@ -25,6 +25,7 @@ export async function POST() {
     const user = {
       id: customer.id,
       email: customer.email,
+      name: customer.name,
       passwordHash,
       createdAt: new Date().toISOString(),
     };
