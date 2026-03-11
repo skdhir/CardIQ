@@ -6,7 +6,9 @@
 
 import fs from "fs";
 import path from "path";
+import bcrypt from "bcryptjs";
 import type { BenefitStatus } from "@/types";
+import { DEMO_CUSTOMERS } from "@/lib/mock-data/demo-customers";
 
 const DATA_DIR = process.env.DATA_DIR ?? path.join(process.cwd(), ".data");
 const USERS_FILE = path.join(DATA_DIR, "users.json");
@@ -40,10 +42,46 @@ export interface UserData {
   benefits: Record<string, BenefitTrackingRecord>; // benefitId → record
 }
 
+// ─── Auto-seed demo data on cold start ──────────────────────────────────────
+
+let seeded = false;
+
+function ensureDemoData() {
+  if (seeded) return;
+  seeded = true;
+  ensureDir();
+  if (fs.existsSync(USERS_FILE)) return; // already have data
+
+  const users: StoredUser[] = [];
+  for (const customer of DEMO_CUSTOMERS) {
+    const passwordHash = bcrypt.hashSync(customer.password, 12);
+    users.push({
+      id: customer.id,
+      email: customer.email,
+      passwordHash,
+      createdAt: new Date().toISOString(),
+    });
+
+    // Seed per-user data (cards + benefits)
+    const userData: UserData = { cards: [...customer.cardIds], benefits: {} };
+    for (const [benefitId, usage] of Object.entries(customer.benefitUsage)) {
+      userData.benefits[benefitId] = {
+        benefitId,
+        status: usage.status,
+        amountUsed: usage.amountUsed,
+        lastUpdated: new Date().toISOString(),
+      };
+    }
+    fs.writeFileSync(userDataPath(customer.id), JSON.stringify(userData, null, 2));
+  }
+  fs.writeFileSync(USERS_FILE, JSON.stringify(users, null, 2));
+  console.log(`[CardIQ] Auto-seeded ${users.length} demo accounts`);
+}
+
 // ─── Users ───────────────────────────────────────────────────────────────────
 
 function readUsers(): StoredUser[] {
-  ensureDir();
+  ensureDemoData();
   if (!fs.existsSync(USERS_FILE)) return [];
   return JSON.parse(fs.readFileSync(USERS_FILE, "utf-8"));
 }
