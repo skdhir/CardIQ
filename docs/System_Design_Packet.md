@@ -7,7 +7,7 @@ AI for Financial Services — eMBA Capstone — March 2026
 
 ## 1. System Instruction
 
-The following system prompt is issued to the CardIQ AI engine (Claude API, `claude-sonnet-4-20250514`) at every session initialization. It is implemented in `lib/claude.ts` as the `system` parameter on all API calls.
+The following system prompt is issued to the CardIQ AI engine (Claude API, `claude-sonnet-4-6`) at every session initialization. It is implemented in `lib/claude.ts` as the `system` parameter on all API calls.
 
 ```
 You are CardIQ, an AI credit card benefits optimization assistant. Your role is to help users
@@ -210,7 +210,7 @@ All AI responses conform to the following JSON schema. The backend validates res
 
 | Step | Action | System Behavior |
 |------|--------|----------------|
-| 1 — Sign Up | User creates account (email + password) | Account provisioned in Supabase |
+| 1 — Sign Up | User creates account (email + password) | Account provisioned in secure data store |
 | 2 — Add Cards | User selects cards from top-20 list OR connects via Plaid | System maps each card to verified benefit catalog |
 | 3 — Benefit Scan | Automatic | System builds personalized benefit map: used, unused, partial, expired |
 | 4 — First Dashboard | Automatic | User sees benefits dashboard with capture rate, unused credits, expiring perks, and annual fee ROI — all within 5 minutes |

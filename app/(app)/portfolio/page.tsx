@@ -252,6 +252,7 @@ export default function PortfolioPage() {
         {aiAdvice && !aiLoading && (
           <div className="bg-gradient-to-br from-brand-50 to-indigo-50 rounded-xl p-4 text-sm text-gray-700 leading-relaxed whitespace-pre-line">
             {aiAdvice}
+            <p className="text-[10px] text-gray-400 mt-3">CardIQ provides information, not financial advice. Verify terms with your card issuer.</p>
           </div>
         )}
       </div>

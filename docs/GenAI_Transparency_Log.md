@@ -17,10 +17,10 @@ This log documents all AI tools used in the development of the CardIQ platform a
 |------|----------------|---------|---------|
 | Claude.ai (claude.ai) | Claude Sonnet 4 | Concept development, document drafting, PRD refinement | Early concept, PRD |
 | Claude Code (CLI) | Claude Opus 4.6 | Code generation, system design, document rewriting, prototype fixes | All code, all final deliverables |
-| Claude API (CardIQ app) | claude-sonnet-4-20250514 | Live AI recommendation engine in working prototype | CardIQ application |
+| Claude API (CardIQ app) | claude-sonnet-4-6 | Live AI recommendation engine in working prototype | CardIQ application |
 | ChatGPT (research) | GPT-4o | Initial market research and competitive landscape mapping | Early concept phase only |
 | Plaid Sandbox API | N/A (third-party) | Simulated bank/card data for prototype development | CardIQ app — onboarding |
-| Supabase | N/A (infrastructure) | Database for user profiles, transactions, card data | CardIQ app — backend |
+| File-based JSON store | N/A (infrastructure) | Lightweight data store for user profiles, benefit tracking, card data | CardIQ app — backend |
 
 ---
 

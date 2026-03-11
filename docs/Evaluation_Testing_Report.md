@@ -10,7 +10,7 @@ AI for Financial Services — eMBA Capstone — March 2026
 This report documents the evaluation framework for CardIQ's AI recommendation engine. It defines success and failure criteria, presents seven structured test cases covering the core interaction spectrum (including one documented failure and iteration), and records test results against each criterion.
 
 **Testing environment:**
-- Model: `claude-sonnet-4-20250514` (Claude Sonnet 4)
+- Model: `claude-sonnet-4-6` (Claude Sonnet 4.6)
 - Temperature: default (1.0)
 - System prompt: v2.1 (3-tier instruction hierarchy, as defined in System Design Packet)
 - Card terms DB: v2.4 (last verified 2026-03-01)

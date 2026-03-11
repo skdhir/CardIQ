@@ -10,6 +10,10 @@ The average premium credit cardholder leaves **$300-$600 per year** in unused st
 
 Existing tools don't solve this. Comparison sites (NerdWallet, Credit Karma) help consumers *choose* cards but offer zero post-acquisition value. Issuer apps (Amex, Chase) track only their own cards. No platform provides a unified, cross-issuer view of all benefits across a consumer's full card portfolio.
 
+## Who It's For
+
+Three consumer segments are underserved today: **new cardholders** who don't know what benefits they have (Marcus, 20s, first rewards card), **unaware cardholders** who have valuable cards but forget to use perks before they expire (Emma, 30s, leaves $400/yr on the table), and **portfolio evaluators** who need to decide which premium cards are worth the annual fee (Priya, 40s, $1,500+/yr in fees across 4 cards).
+
 ## The Solution
 
 CardIQ is an AI-powered platform that helps consumers extract the full value from credit cards they already hold. It provides:

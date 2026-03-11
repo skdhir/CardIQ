@@ -142,6 +142,7 @@ export default function OptimizerPage() {
         {aiResult && (
           <div className="mt-3 bg-brand-50 rounded-xl p-3 text-sm text-gray-700 leading-relaxed">
             {aiResult}
+            <p className="text-[10px] text-gray-400 mt-2">CardIQ provides information, not financial advice. Verify terms with your card issuer.</p>
           </div>
         )}
       </div>

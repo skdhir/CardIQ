@@ -128,6 +128,7 @@ export default function BenefitDetailModal({
             ) : (
               <p className="text-sm text-gray-700 leading-relaxed">{explanation}</p>
             )}
+            <p className="text-[10px] text-gray-400 mt-2">CardIQ provides information, not financial advice. Verify terms with your card issuer.</p>
           </div>
 
           {/* Redemption Instructions */}
