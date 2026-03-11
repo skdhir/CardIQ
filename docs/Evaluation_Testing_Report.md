@@ -345,7 +345,7 @@ The following response patterns are explicitly prohibited and flagged as failure
 To reproduce these tests:
 
 1. Deploy the CardIQ prototype with the system prompt defined in `lib/claude.ts`
-2. Use model `claude-sonnet-4-20250514` with default temperature
+2. Use model `claude-sonnet-4-6` with default temperature
 3. Call the appropriate API endpoint (`/api/ai/optimize`, `/api/ai/explain`, or `/api/ai/portfolio`) with the exact JSON input documented above
 4. Parse the JSON response and evaluate against the success criteria table in Section 2
 5. Any deviation from expected behavior is logged and investigated before re-running
