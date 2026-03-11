@@ -112,7 +112,7 @@ function userDataPath(userId: string) {
 }
 
 function readUserData(userId: string): UserData {
-  ensureDir();
+  ensureDemoData();
   const p = userDataPath(userId);
   if (!fs.existsSync(p)) {
     return { cards: [], benefits: {} };

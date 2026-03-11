@@ -1,5 +1,6 @@
 "use client";
 
+import { useEffect, useState } from "react";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import { cn } from "@/lib/utils";
@@ -10,6 +11,7 @@ import {
   Bell,
   PieChart,
   LogOut,
+  User,
 } from "lucide-react";
 
 const navItems = [
@@ -22,6 +24,14 @@ const navItems = [
 export default function Sidebar() {
   const pathname = usePathname();
   const router = useRouter();
+  const [userEmail, setUserEmail] = useState("");
+
+  useEffect(() => {
+    fetch("/api/auth/me")
+      .then((r) => r.json())
+      .then((data) => { if (data.email) setUserEmail(data.email); })
+      .catch(() => {});
+  }, []);
 
   async function handleSignOut() {
     await fetch("/api/auth/logout", { method: "POST" });
@@ -61,8 +71,14 @@ export default function Sidebar() {
         })}
       </nav>
 
-      {/* Sign out */}
-      <div className="px-3 pb-4">
+      {/* User + Sign out */}
+      <div className="px-3 pb-4 space-y-1">
+        {userEmail && (
+          <div className="flex items-center gap-3 px-3 py-2.5 text-sm text-gray-600">
+            <User className="w-4 h-4 text-gray-400 shrink-0" />
+            <span className="truncate">{userEmail}</span>
+          </div>
+        )}
         <button
           onClick={handleSignOut}
           className="flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium text-gray-500 hover:bg-gray-50 hover:text-gray-700 transition-colors w-full text-left"

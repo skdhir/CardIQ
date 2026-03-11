@@ -83,11 +83,15 @@ function buildDeveloperContext(data: {
 // If user message conflicts with system instruction, system instruction wins.
 // ═══════════════════════════════════════════════════════════════════════════
 
-// Helper to extract text from Claude response
+// Helper to extract text from Claude response, stripping markdown code fences
 function extractText(message: Anthropic.Message): string {
   const content = message.content[0];
-  if (content.type === "text") return content.text;
-  return "";
+  if (content.type !== "text") return "";
+  let text = content.text.trim();
+  // Strip ```json ... ``` wrappers that Claude sometimes adds
+  const fenceMatch = text.match(/^```(?:json)?\s*\n?([\s\S]*?)\n?\s*```$/);
+  if (fenceMatch) text = fenceMatch[1].trim();
+  return text;
 }
 
 // ─── Benefit Explanation ──────────────────────────────────────────────────
