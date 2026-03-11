@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import type { Transaction } from "@/types";
+import type { Transaction, CardCatalogEntry } from "@/types";
 import { formatCurrency, formatDate } from "@/lib/utils";
 import { CheckCircle, AlertTriangle, Loader2, Sparkles, ChevronDown, ChevronUp } from "lucide-react";
 
@@ -24,15 +24,18 @@ export default function OptimizerPage() {
   const [aiResult, setAiResult] = useState("");
   const [aiLoading, setAiLoading] = useState(false);
   const [expandedId, setExpandedId] = useState<string | null>(null);
+  const [userCards, setUserCards] = useState<CardCatalogEntry[]>([]);
 
   useEffect(() => {
-    fetch("/api/transactions")
-      .then((r) => r.json())
-      .then(({ transactions: t, totalMissed: m }) => {
-        setTransactions(t ?? []);
-        setTotalMissed(m ?? 0);
-        setLoading(false);
-      });
+    Promise.all([
+      fetch("/api/transactions").then((r) => r.json()),
+      fetch("/api/cards/user").then((r) => r.json()),
+    ]).then(([txnData, cardData]) => {
+      setTransactions(txnData.transactions ?? []);
+      setTotalMissed(txnData.totalMissed ?? 0);
+      setUserCards(cardData.cards ?? []);
+      setLoading(false);
+    });
   }, []);
 
   const displayed = filter === "suboptimal"
@@ -54,11 +57,11 @@ export default function OptimizerPage() {
     setAiLoading(true);
     setAiResult("");
 
-    const userCards = [
-      { id: "amex-gold", name: "Amex Gold", rewards: "4x dining, 4x groceries, 3x flights" },
-      { id: "chase-sapphire-preferred", name: "Chase Sapphire Preferred", rewards: "5x Chase Travel, 3x dining, 3x streaming" },
-      { id: "chase-freedom-unlimited", name: "Chase Freedom Unlimited", rewards: "3% dining/drugstores, 1.5% everything else" },
-    ];
+    const cardsForAI = userCards.map((c) => ({
+      id: c.id,
+      name: c.name,
+      rewards: c.benefits.map((b) => `${b.name}: ${b.description}`).join("; "),
+    }));
 
     const res = await fetch("/api/ai/optimize", {
       method: "POST",
@@ -66,7 +69,7 @@ export default function OptimizerPage() {
       body: JSON.stringify({
         merchant: aiQuery,
         category: "general",
-        userCards,
+        userCards: cardsForAI,
       }),
     });
     const data = await res.json();

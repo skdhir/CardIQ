@@ -4,7 +4,7 @@ const anthropic = new Anthropic({
   apiKey: process.env.ANTHROPIC_API_KEY!,
 });
 
-const MODEL = "claude-sonnet-4-5-20250929";
+const MODEL = "claude-sonnet-4-6";
 
 // ═══════════════════════════════════════════════════════════════════════════
 // TIER 1 — SYSTEM INSTRUCTION (Immutable)
