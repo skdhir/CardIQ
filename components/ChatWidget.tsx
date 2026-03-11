@@ -3,6 +3,7 @@
 import { useState, useRef, useEffect } from "react";
 import { MessageCircle, X, Send, Loader2 } from "lucide-react";
 import { cn } from "@/lib/utils";
+import ReportIssueButton from "@/components/ui/ReportIssueButton";
 
 type Message = {
   role: "user" | "assistant";
@@ -149,6 +150,12 @@ export default function ChatWidget() {
                   )}
                 >
                   {msg.content}
+                  {msg.role === "assistant" && (
+                    <div className="mt-1.5 border-t border-gray-200/60 pt-1.5">
+                      <p className="text-[9px] text-gray-400">Not financial advice. Verify with your issuer.</p>
+                      <ReportIssueButton context={`chat:msg-${i}`} />
+                    </div>
+                  )}
                 </div>
               </div>
             ))}

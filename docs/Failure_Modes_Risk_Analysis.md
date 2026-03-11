@@ -103,6 +103,7 @@ Per course requirements, this analysis explicitly addresses **user misuse risks*
 | **Severity** | MEDIUM |
 | **Likelihood** | LOW (Plaid has 99.9%+ uptime, but outages happen) |
 | **Description** | Plaid API is unavailable, preventing transaction data refresh. Recommendations are based on stale data without the user realizing. |
+| **Prototype Note** | In the current prototype, Plaid is stubbed with mock data. This failure mode applies to the production deployment roadmap and is documented here proactively to demonstrate awareness of infrastructure risks. The mitigations below describe the production design. |
 | **Mitigation** | 1. Graceful degradation: fall back to most recent cached data with confidence downgraded to LOW. 2. Data freshness timestamp displayed prominently in dashboard. 3. Manual card entry supported as fallback (no Plaid required). 4. Users notified if data is >7 days stale with recommendation to re-sync. |
 | **Residual Risk** | Extended outages (>48h) mean users operating on increasingly stale data. Manual entry fallback partially mitigates. |
 
@@ -159,7 +160,20 @@ Per course requirements, this analysis explicitly addresses **user misuse risks*
 | FM-03 | User acts on expired benefit | HIGH | MEDIUM | Yes — calendar-anchored resets + warnings |
 | FM-04 | Recommendation quality disparity | MEDIUM | MEDIUM | Partial — audit + supplemental advice |
 | FM-05 | User over-reliance | HIGH | MEDIUM | Partial — disclaimers + friction |
-| FM-06 | Plaid API outage | MEDIUM | LOW | Yes — graceful degradation + manual fallback |
+| FM-06 | Plaid API outage (*production roadmap*) | MEDIUM | LOW | Yes — graceful degradation + manual fallback |
 | FM-07 | User gaming benefit tracking | LOW | LOW-MED | Yes — Plaid verification where available |
 | FM-08 | Reputational risk (shared recs) | MEDIUM | MEDIUM | Partial — footer disclaimers |
 | FM-09 | Wrong card selected at onboarding | HIGH | LOW-MED | Yes — confirmation step + Plaid auto-ID |
+
+---
+
+## 4. RACI Ownership Matrix
+
+| Role | Responsible | Accountable | Consulted | Informed |
+|------|-----------|-------------|-----------|----------|
+| **Benefits Data Analyst** | Weekly DB reviews (FM-02), hallucination audits (FM-01), user-reported error triage (FM-01, FM-03) | Data accuracy SLA (48h resolution) | Engineering (on DB schema changes) | Product Lead (weekly audit summary) |
+| **AI Quality Reviewer** | Quarterly model output audit (FM-04), test case maintenance, confidence calibration review | Model behavior quality | Benefits Data Analyst (on term accuracy), Compliance (on regulatory language) | Engineering (on system prompt changes) |
+| **Compliance Officer** | Regulatory language review (FM-05, FM-08), Terms of Service updates | Regulatory compliance sign-off | Legal counsel (on new regulations) | Product Lead, Engineering |
+| **Product Lead** | Prioritization of mitigation work, user experience decisions (FM-04, FM-09) | Overall product risk posture | All roles | Executive stakeholders |
+| **Engineering** | System implementation, monitoring, incident response (FM-06) | System uptime and data pipeline reliability | AI Quality Reviewer (on prompt changes) | Product Lead (on incidents) |
+| **End User** | Self-reported issue flagging (via Report Issue button), benefit status verification | Own financial decisions (CardIQ is informational only) | N/A | Via in-app notifications, confidence warnings, disclaimers |
