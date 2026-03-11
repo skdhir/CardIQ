@@ -29,49 +29,12 @@ export default function DashboardPage() {
   const [showManage, setShowManage] = useState(false);
 
   const fetchData = useCallback(async () => {
-    let [cardsRes, benefitsRes] = await Promise.all([
+    const [cardsRes, benefitsRes] = await Promise.all([
       fetch("/api/cards/user"),
       fetch("/api/benefits"),
     ]);
-    let { cards: fetchedCards } = await cardsRes.json();
-    let { benefits } = await benefitsRes.json();
-
-    // Serverless fallback: if no cards returned but localStorage has onboarding
-    // data, re-seed this Lambda instance and re-fetch
-    if ((!fetchedCards || fetchedCards.length === 0)) {
-      try {
-        const saved = localStorage.getItem("cardiq_onboarding");
-        if (saved) {
-          const { cards: savedCards, benefits: savedBenefits } = JSON.parse(saved);
-          if (savedCards?.length) {
-            // Re-POST cards + benefits to whichever Lambda instance is handling this
-            await Promise.all([
-              ...savedCards.map((cardId: string) =>
-                fetch("/api/cards/user", {
-                  method: "POST",
-                  headers: { "Content-Type": "application/json" },
-                  body: JSON.stringify({ cardId }),
-                })
-              ),
-              ...(savedBenefits ?? []).map((b: { id: string; status: string; amountUsed: number }) =>
-                fetch(`/api/benefits/${b.id}`, {
-                  method: "PATCH",
-                  headers: { "Content-Type": "application/json" },
-                  body: JSON.stringify({ status: b.status, amountUsed: b.amountUsed }),
-                })
-              ),
-            ]);
-            // Re-fetch now that this instance has the data
-            [cardsRes, benefitsRes] = await Promise.all([
-              fetch("/api/cards/user"),
-              fetch("/api/benefits"),
-            ]);
-            ({ cards: fetchedCards } = await cardsRes.json());
-            ({ benefits } = await benefitsRes.json());
-          }
-        }
-      } catch { /* localStorage unavailable — proceed with empty state */ }
-    }
+    const { cards: fetchedCards } = await cardsRes.json();
+    const { benefits } = await benefitsRes.json();
 
     setCards(fetchedCards ?? []);
 

@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server";
-import { getSession } from "@/lib/auth";
-import { getUserCards, addUserCard, removeUserCard } from "@/lib/db";
+import { getSession, getPortfolioFromCookie, setPortfolioCookie } from "@/lib/auth";
+import { getUserCards, getUserCardsWithFallback, addUserCard, removeUserCard } from "@/lib/db";
 import { CARD_CATALOG } from "@/lib/mock-data/cards";
 
 // GET /api/cards/user — return the current user's active cards with full benefit data
@@ -8,7 +8,7 @@ export async function GET() {
   const session = await getSession();
   if (!session) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
 
-  const cardIds = getUserCards(session.userId);
+  const cardIds = getUserCardsWithFallback(session.userId, getPortfolioFromCookie());
   const cards = cardIds.map((id) => CARD_CATALOG.find((c) => c.id === id)).filter(Boolean);
 
   return NextResponse.json({ cards });
@@ -26,6 +26,7 @@ export async function POST(request: Request) {
   if (!card) return NextResponse.json({ error: "Card not found" }, { status: 404 });
 
   addUserCard(session.userId, cardId);
+  setPortfolioCookie(getUserCards(session.userId));
   return NextResponse.json({ success: true });
 }
 
@@ -39,5 +40,6 @@ export async function DELETE(request: Request) {
   if (!cardId) return NextResponse.json({ error: "cardId required" }, { status: 400 });
 
   removeUserCard(session.userId, cardId);
+  setPortfolioCookie(getUserCards(session.userId));
   return NextResponse.json({ success: true });
 }

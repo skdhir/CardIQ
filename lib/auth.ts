@@ -11,6 +11,7 @@ const JWT_SECRET = new TextEncoder().encode(
   process.env.JWT_SECRET ?? "cardiq-dev-secret-change-in-production"
 );
 const COOKIE_NAME = "cardiq_session";
+const PORTFOLIO_COOKIE = "cardiq_portfolio";
 const COOKIE_MAX_AGE = 60 * 60 * 24 * 30; // 30 days
 
 export interface SessionPayload {
@@ -73,3 +74,34 @@ export async function clearSessionCookie() {
 }
 
 export const COOKIE_NAME_EXPORT = COOKIE_NAME;
+
+// ─── Portfolio cookie (serverless persistence) ──────────────────────────────
+// Stores card IDs so any Lambda instance can re-hydrate user data from the cookie.
+
+export function getPortfolioFromCookie(): string[] {
+  try {
+    const cookieStore = cookies();
+    const raw = cookieStore.get(PORTFOLIO_COOKIE)?.value;
+    if (!raw) return [];
+    const parsed = JSON.parse(raw);
+    return Array.isArray(parsed) ? parsed : [];
+  } catch {
+    return [];
+  }
+}
+
+export function setPortfolioCookie(cardIds: string[]) {
+  const cookieStore = cookies();
+  cookieStore.set(PORTFOLIO_COOKIE, JSON.stringify(cardIds), {
+    httpOnly: true,
+    secure: process.env.NODE_ENV === "production",
+    sameSite: "lax",
+    maxAge: COOKIE_MAX_AGE,
+    path: "/",
+  });
+}
+
+export function clearPortfolioCookie() {
+  const cookieStore = cookies();
+  cookieStore.delete(PORTFOLIO_COOKIE);
+}

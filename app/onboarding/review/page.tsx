@@ -145,19 +145,6 @@ function ReviewBenefitsContent() {
       ),
     ]);
 
-    // Persist onboarding data in localStorage as a fallback for serverless
-    // (Lambda instances have ephemeral filesystems — this ensures the dashboard
-    // can re-hydrate user data if it lands on a different instance)
-    try {
-      localStorage.setItem(
-        "cardiq_onboarding",
-        JSON.stringify({
-          cards: onboardingCardIds,
-          benefits: patches.map(({ id }) => ({ id, status: "unused", amountUsed: 0 })),
-        })
-      );
-    } catch { /* localStorage unavailable — API calls are the primary path */ }
-
     router.push("/dashboard");
   }
 

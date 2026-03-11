@@ -1,7 +1,7 @@
 import { NextResponse } from "next/server";
 import Anthropic from "@anthropic-ai/sdk";
-import { getSession } from "@/lib/auth";
-import { getUserById, getUserCards } from "@/lib/db";
+import { getSession, getPortfolioFromCookie } from "@/lib/auth";
+import { getUserById, getUserCardsWithFallback } from "@/lib/db";
 import { CARD_CATALOG } from "@/lib/mock-data/cards";
 import { MODEL, SYSTEM_INSTRUCTION } from "@/lib/claude";
 
@@ -32,7 +32,7 @@ export async function POST(request: Request) {
   let userContext = "";
   try {
     const user = getUserById(session.userId);
-    const userCardIds = getUserCards(session.userId);
+    const userCardIds = getUserCardsWithFallback(session.userId, getPortfolioFromCookie());
     if (user && userCardIds.length > 0) {
       const cardNames = userCardIds
         .map((id) => CARD_CATALOG.find((c: { id: string }) => c.id === id)?.name)

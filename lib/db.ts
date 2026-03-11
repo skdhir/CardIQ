@@ -152,6 +152,22 @@ export function getUserCards(userId: string): string[] {
   return readUserData(userId).cards;
 }
 
+/**
+ * Read user's cards with a cookie-based fallback for serverless environments.
+ * If the user file has no cards but cookieFallback is non-empty, write the
+ * fallback to disk (re-hydrating this Lambda instance) and return it.
+ */
+export function getUserCardsWithFallback(userId: string, cookieFallback: string[]): string[] {
+  const data = readUserData(userId);
+  if (data.cards.length > 0) return data.cards;
+  if (cookieFallback.length === 0) return [];
+
+  // Re-hydrate this instance from the cookie
+  data.cards = [...cookieFallback];
+  writeUserData(userId, data);
+  return data.cards;
+}
+
 export function addUserCard(userId: string, cardId: string) {
   const data = readUserData(userId);
   if (!data.cards.includes(cardId)) data.cards.push(cardId);
