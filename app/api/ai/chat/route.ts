@@ -63,17 +63,26 @@ export async function POST(request: Request) {
     return NextResponse.json({ error: "No valid messages" }, { status: 400 });
   }
 
-  const response = await anthropic.messages.create({
-    model: MODEL,
-    max_tokens: 512,
-    system: systemWithContext,
-    messages: sanitizedMessages,
-  });
+  try {
+    const response = await anthropic.messages.create({
+      model: MODEL,
+      max_tokens: 512,
+      system: systemWithContext,
+      messages: sanitizedMessages,
+    });
 
-  const content = response.content[0];
-  if (content.type !== "text") {
-    return NextResponse.json({ error: "Unexpected response" }, { status: 500 });
+    const content = response.content[0];
+    if (content.type !== "text") {
+      return NextResponse.json({ error: "Unexpected response" }, { status: 500 });
+    }
+
+    return NextResponse.json({ reply: content.text });
+  } catch (err) {
+    console.error("Chat API error:", err);
+    const msg = err instanceof Error ? err.message : String(err);
+    return NextResponse.json(
+      { error: "Chat unavailable", debug: msg },
+      { status: 500 }
+    );
   }
-
-  return NextResponse.json({ reply: content.text });
 }

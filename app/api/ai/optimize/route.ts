@@ -13,8 +13,9 @@ export async function POST(request: Request) {
     return NextResponse.json(result);
   } catch (err) {
     console.error("Claude API error:", err);
+    const msg = err instanceof Error ? err.message : String(err);
     return NextResponse.json(
-      { error: "AI recommendation unavailable" },
+      { error: "AI recommendation unavailable", debug: msg },
       { status: 500 }
     );
   }
