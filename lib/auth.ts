@@ -17,6 +17,7 @@ const COOKIE_MAX_AGE = 60 * 60 * 24 * 30; // 30 days
 export interface SessionPayload {
   userId: string;
   email: string;
+  name?: string;
 }
 
 // ─── Password helpers ─────────────────────────────────────────────────────────

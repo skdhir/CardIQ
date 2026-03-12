@@ -6,8 +6,12 @@ export async function GET() {
   const session = await getSession();
   if (!session) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
 
+  // Try file-based user record first; fall back to JWT session data.
+  // On serverless, the user file may not exist on this Lambda instance —
+  // the JWT carries name + email so the sidebar always shows "Hi, Name".
   const user = getUserById(session.userId);
-  if (!user) return NextResponse.json({ error: "User not found" }, { status: 404 });
+  const name = user?.name ?? session.name ?? null;
+  const email = user?.email ?? session.email;
 
-  return NextResponse.json({ name: user.name, email: user.email });
+  return NextResponse.json({ name, email });
 }

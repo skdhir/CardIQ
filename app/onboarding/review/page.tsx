@@ -112,38 +112,47 @@ function ReviewBenefitsContent() {
   async function handleConfirm() {
     setConfirming(true);
 
-    // Collect all active benefits (detected minus removed, plus manually added)
-    const patches: Array<{ id: string; dollarValue: number }> = [];
+    // Collect detected benefits (mark used — evidence from transactions)
+    const detectedPatches: Array<{ id: string; dollarValue: number }> = [];
+    // Collect manually added benefits (mark unused — no evidence yet)
+    const manualPatches: Array<{ id: string }> = [];
+
     for (const g of cardGroups) {
       for (const b of g.detected) {
-        if (!g.removedIds.has(b.id)) patches.push({ id: b.id, dollarValue: b.dollarValue });
+        if (!g.removedIds.has(b.id)) detectedPatches.push({ id: b.id, dollarValue: b.dollarValue });
       }
       for (const benefitId of Array.from(g.addingIds)) {
         const b = g.available.find((x) => x.id === benefitId);
-        if (b) patches.push({ id: b.id, dollarValue: b.dollarValue });
+        if (b) manualPatches.push({ id: b.id });
       }
     }
 
-    // Collect card IDs from the onboarding flow
+    // Save cards SEQUENTIALLY to avoid race conditions on serverless.
+    // Parallel POSTs cause read-modify-write races — last write wins, loses other cards.
     const onboardingCardIds = cardGroups.map((g) => g.card.id);
+    for (const cardId of onboardingCardIds) {
+      await fetch("/api/cards/user", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ cardId }),
+      });
+    }
 
-    // Save cards + benefits via API
-    await Promise.all([
-      ...onboardingCardIds.map((cardId) =>
-        fetch("/api/cards/user", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ cardId }),
-        })
-      ),
-      ...patches.map(({ id }) =>
-        fetch(`/api/benefits/${id}`, {
-          method: "PATCH",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ status: "unused", amountUsed: 0 }),
-        })
-      ),
-    ]);
+    // Save benefits SEQUENTIALLY — all write to the same user data file
+    for (const { id, dollarValue } of detectedPatches) {
+      await fetch(`/api/benefits/${id}`, {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ status: "used", amountUsed: dollarValue }),
+      });
+    }
+    for (const { id } of manualPatches) {
+      await fetch(`/api/benefits/${id}`, {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ status: "unused", amountUsed: 0 }),
+      });
+    }
 
     router.push("/dashboard");
   }
