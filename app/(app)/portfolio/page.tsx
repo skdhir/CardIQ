@@ -7,6 +7,7 @@ import ProgressBar from "@/components/ui/ProgressBar";
 import { Sparkles, Loader2, TrendingUp, TrendingDown, Minus, RefreshCw } from "lucide-react";
 import ConfidenceWarning from "@/components/ui/ConfidenceWarning";
 import ReportIssueButton from "@/components/ui/ReportIssueButton";
+import CoachingTip from "@/components/ui/CoachingTip";
 
 interface BenefitTrackingItem {
   benefitId: string;
@@ -133,17 +134,26 @@ export default function PortfolioPage() {
       <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
         <div className="card text-center">
           <p className="text-3xl font-bold text-gray-900">{formatCurrency(totalFees)}</p>
-          <p className="text-sm text-gray-500 mt-1">Total annual fees</p>
+          <p className="text-sm text-gray-500 mt-1 flex items-center justify-center gap-1">
+            Total annual fees
+            <CoachingTip tip="What you pay each year to hold these cards. This is the cost side of your card portfolio equation." />
+          </p>
         </div>
         <div className="card text-center">
           <p className="text-3xl font-bold text-green-600">{formatCurrency(totalCaptured)}</p>
-          <p className="text-sm text-gray-500 mt-1">Total value captured</p>
+          <p className="text-sm text-gray-500 mt-1 flex items-center justify-center gap-1">
+            Total value captured
+            <CoachingTip tip="Dollar value of benefits you've redeemed. When this exceeds your annual fees, your cards are paying for themselves." />
+          </p>
         </div>
         <div className="card text-center">
           <p className={`text-3xl font-bold ${totalNet >= 0 ? "text-green-600" : "text-red-500"}`}>
             {totalNet >= 0 ? "+" : ""}{formatCurrency(totalNet)}
           </p>
-          <p className="text-sm text-gray-500 mt-1">Net portfolio ROI</p>
+          <p className="text-sm text-gray-500 mt-1 flex items-center justify-center gap-1">
+            Net portfolio ROI
+            <CoachingTip tip="Benefits captured minus annual fees. Green = your cards are earning more than they cost. Red = consider downgrading." />
+          </p>
         </div>
       </div>
 
@@ -167,7 +177,7 @@ export default function PortfolioPage() {
                 </div>
 
                 {/* Recommendation badge */}
-                <div>
+                <div className="flex items-center gap-1.5">
                   {roi.recommendation === "keep" && (
                     <span className="inline-flex items-center gap-1.5 bg-green-100 text-green-700 text-xs font-semibold px-3 py-1.5 rounded-full">
                       <TrendingUp className="w-3 h-3" /> Keep
@@ -183,6 +193,13 @@ export default function PortfolioPage() {
                       <Minus className="w-3 h-3" /> Evaluate
                     </span>
                   )}
+                  <CoachingTip tip={
+                    roi.recommendation === "keep"
+                      ? "This card's captured benefits exceed its annual fee — it's paying for itself."
+                      : roi.recommendation === "downgrade"
+                      ? "You're losing over $100/yr on this card. Consider a no-fee alternative from the same issuer."
+                      : "This card is borderline. Use more benefits or consider if a different card fits your spending better."
+                  } />
                 </div>
               </div>
 

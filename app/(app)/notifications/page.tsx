@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import type { Notification } from "@/types";
 import { formatRelativeTime } from "@/lib/utils";
 import { Bell, AlertCircle, Sparkles, Calendar, CreditCard, ChevronRight, Loader2 } from "lucide-react";
+import CoachingTip from "@/components/ui/CoachingTip";
 
 const TYPE_CONFIG: Record<
   string,
@@ -81,7 +82,10 @@ export default function NotificationsPage() {
     <div className="space-y-6">
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-2xl font-bold text-gray-900">Notifications</h1>
+          <h1 className="text-2xl font-bold text-gray-900 flex items-center gap-2">
+            Notifications
+            <CoachingTip tip="CardIQ monitors your benefits for expiring credits, optimization tips, and renewal reminders. Act on red 'Expiring' alerts first." />
+          </h1>
           <p className="text-sm text-gray-500 mt-0.5">
             {unreadCount > 0 ? `${unreadCount} unread` : "All caught up"}
           </p>

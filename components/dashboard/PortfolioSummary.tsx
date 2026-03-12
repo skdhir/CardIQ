@@ -1,5 +1,6 @@
 import type { PortfolioSummary as PortfolioSummaryType } from "@/types";
 import ProgressBar from "@/components/ui/ProgressBar";
+import CoachingTip from "@/components/ui/CoachingTip";
 import { formatCurrency } from "@/lib/utils";
 import { TrendingUp, DollarSign, AlertCircle, CreditCard } from "lucide-react";
 
@@ -22,6 +23,7 @@ export default function PortfolioSummary({ summary }: Props) {
           label="Annual Fees"
           value={formatCurrency(summary.totalAnnualFees)}
           sub="total paid"
+          tip="Combined annual fees across all your cards. CardIQ helps you determine if benefits exceed this cost."
         />
         <Metric
           icon={<TrendingUp className="w-4 h-4 text-green-500" />}
@@ -29,6 +31,7 @@ export default function PortfolioSummary({ summary }: Props) {
           value={formatCurrency(summary.totalCaptured)}
           sub="this year"
           highlight="green"
+          tip="Dollar value of benefits you've actually redeemed — dining credits, travel perks, statement credits, etc."
         />
         <Metric
           icon={<AlertCircle className="w-4 h-4 text-red-400" />}
@@ -36,19 +39,24 @@ export default function PortfolioSummary({ summary }: Props) {
           value={formatCurrency(summary.totalMissed)}
           sub="unclaimed"
           highlight="red"
+          tip="Benefits you're paying for but haven't used. Mark them as 'used' on your cards below to lower this number."
         />
         <Metric
           icon={<DollarSign className="w-4 h-4 text-brand-500" />}
           label="Total Available"
           value={formatCurrency(summary.totalBenefitValue)}
           sub="in benefits"
+          tip="Total annual value of all benefits across your portfolio, based on verified issuer data."
         />
       </div>
 
       {/* Capture rate bar */}
       <div>
         <div className="flex items-center justify-between mb-1.5">
-          <span className="text-sm font-medium text-gray-700">Overall Capture Rate</span>
+          <span className="text-sm font-medium text-gray-700 flex items-center gap-1.5">
+            Overall Capture Rate
+            <CoachingTip tip="Percentage of available benefits you've used. Aim for 70%+ to ensure your annual fees are worthwhile." />
+          </span>
           <span className="text-sm font-bold text-gray-900">{summary.captureRate}%</span>
         </div>
         <ProgressBar value={summary.captureRate} color="green" className="h-3" />
@@ -66,16 +74,22 @@ function Metric({
   value,
   sub,
   highlight,
+  tip,
 }: {
   icon: React.ReactNode;
   label: string;
   value: string;
   sub: string;
   highlight?: "green" | "red";
+  tip?: string;
 }) {
   return (
     <div className="bg-gray-50 rounded-xl p-3">
-      <div className="flex items-center gap-1.5 mb-1">{icon}<span className="text-xs text-gray-500">{label}</span></div>
+      <div className="flex items-center gap-1.5 mb-1">
+        {icon}
+        <span className="text-xs text-gray-500">{label}</span>
+        {tip && <CoachingTip tip={tip} />}
+      </div>
       <p
         className={`text-xl font-bold ${
           highlight === "green" ? "text-green-600" : highlight === "red" ? "text-red-500" : "text-gray-900"

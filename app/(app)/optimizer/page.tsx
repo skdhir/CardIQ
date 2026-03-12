@@ -6,6 +6,7 @@ import { formatCurrency, formatDate } from "@/lib/utils";
 import { CheckCircle, AlertTriangle, Loader2, Sparkles, ChevronDown, ChevronUp } from "lucide-react";
 import ConfidenceWarning from "@/components/ui/ConfidenceWarning";
 import ReportIssueButton from "@/components/ui/ReportIssueButton";
+import CoachingTip from "@/components/ui/CoachingTip";
 
 const CATEGORY_LABELS: Record<string, string> = {
   dining: "Dining",
@@ -107,13 +108,19 @@ export default function OptimizerPage() {
       <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
         <div className="card text-center">
           <p className="text-3xl font-bold text-red-500">{formatCurrency(totalMissed)}</p>
-          <p className="text-sm text-gray-500 mt-1">Missed rewards (90 days)</p>
+          <p className="text-sm text-gray-500 mt-1 flex items-center justify-center gap-1">
+            Missed rewards (90 days)
+            <CoachingTip tip="Extra rewards you could have earned by using a different card for each purchase. Based on your card portfolio's reward rates." />
+          </p>
         </div>
         <div className="card text-center">
           <p className="text-3xl font-bold text-gray-900">
             {transactions.filter((t) => !t.isOptimal).length}
           </p>
-          <p className="text-sm text-gray-500 mt-1">Suboptimal transactions</p>
+          <p className="text-sm text-gray-500 mt-1 flex items-center justify-center gap-1">
+            Suboptimal transactions
+            <CoachingTip tip="Purchases where a different card in your wallet would have earned more rewards. Expand each transaction below for details." />
+          </p>
         </div>
         <div className="card text-center">
           <p className="text-3xl font-bold text-green-600">
@@ -121,7 +128,10 @@ export default function OptimizerPage() {
               ? Math.round((transactions.filter((t) => t.isOptimal).length / transactions.length) * 100)
               : 0}%
           </p>
-          <p className="text-sm text-gray-500 mt-1">Optimal card usage rate</p>
+          <p className="text-sm text-gray-500 mt-1 flex items-center justify-center gap-1">
+            Optimal card usage rate
+            <CoachingTip tip="Percentage of transactions where you used the best card for the category. Higher is better — aim for 80%+." />
+          </p>
         </div>
       </div>
 
@@ -130,6 +140,7 @@ export default function OptimizerPage() {
         <div className="flex items-center gap-2 mb-3">
           <Sparkles className="w-4 h-4 text-brand-600" />
           <h2 className="text-sm font-semibold text-brand-700">Ask AI: Which card should I use?</h2>
+          <CoachingTip tip="Type a merchant name or purchase category and AI will recommend the best card from your wallet, with reasoning." />
         </div>
         <form onSubmit={handleAIQuery} className="flex gap-2">
           <input
@@ -155,7 +166,10 @@ export default function OptimizerPage() {
 
       {/* Category breakdown */}
       <div className="card">
-        <h2 className="text-sm font-semibold text-gray-900 mb-3">Spending by Category (90 days)</h2>
+        <h2 className="text-sm font-semibold text-gray-900 mb-3 flex items-center gap-1.5">
+          Spending by Category (90 days)
+          <CoachingTip tip="Your spending broken down by category. Red amounts show rewards you missed — categories with the highest red values are where card optimization matters most." />
+        </h2>
         <div className="space-y-2">
           {Object.entries(categoryStats)
             .sort((a, b) => b[1].missed - a[1].missed)
