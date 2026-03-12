@@ -20,7 +20,18 @@ interface BenefitTrackingItem {
 export default function PortfolioPage() {
   const [cards, setCards] = useState<CardCatalogEntry[]>([]);
   const [loading, setLoading] = useState(true);
-  const [aiAdvice, setAiAdvice] = useState("");
+  interface AICardAdvice {
+    cardName: string;
+    recommendation: string;
+    rationale: string;
+    netROI: string;
+  }
+  interface AIAdviceData {
+    cards: AICardAdvice[];
+    overallSummary: string;
+    tradeoffs: string;
+  }
+  const [aiAdvice, setAiAdvice] = useState<AIAdviceData | null>(null);
   const [aiConfidence, setAiConfidence] = useState<"HIGH" | "MEDIUM" | "LOW">("HIGH");
   const [aiLoading, setAiLoading] = useState(false);
   const [roiCards, setRoiCards] = useState<CardROI[]>([]);
@@ -77,7 +88,7 @@ export default function PortfolioPage() {
 
   async function getAIAdvice() {
     setAiLoading(true);
-    setAiAdvice("");
+    setAiAdvice(null);
 
     const res = await fetch("/api/ai/portfolio", {
       method: "POST",
@@ -93,18 +104,20 @@ export default function PortfolioPage() {
     });
 
     const data = await res.json();
-    // Handle structured PortfolioAdvice response
     if (data.overallSummary) {
       if (data.confidence) setAiConfidence(data.confidence);
-      const cardLines = (data.cards || []).map(
-        (c: { cardName: string; recommendation: string; rationale: string; netROI: string }) =>
-          `${c.cardName}: ${c.recommendation.toUpperCase()} — ${c.rationale} (Net: ${c.netROI})`
-      );
-      const tradeoffs = data.tradeoffs ? `\n\nTradeoffs: ${data.tradeoffs}` : "";
-      setAiAdvice(`${cardLines.join("\n")}\n\n${data.overallSummary}${tradeoffs}`);
+      setAiAdvice({
+        cards: data.cards ?? [],
+        overallSummary: data.overallSummary,
+        tradeoffs: data.tradeoffs ?? "",
+      });
     } else {
       setAiConfidence("LOW");
-      setAiAdvice(data.advice ?? "Unable to generate advice at this time.");
+      setAiAdvice({
+        cards: [],
+        overallSummary: data.advice ?? "Unable to generate advice at this time.",
+        tradeoffs: "",
+      });
     }
     setAiLoading(false);
   }
@@ -271,10 +284,56 @@ export default function PortfolioPage() {
         )}
 
         {aiAdvice && !aiLoading && (
-          <div className="bg-gradient-to-br from-brand-50 to-indigo-50 rounded-xl p-4 text-sm text-gray-700 leading-relaxed whitespace-pre-line">
-            {aiAdvice}
+          <div className="space-y-4">
+            {/* Per-card AI advice */}
+            {aiAdvice.cards.length > 0 && (
+              <div className="space-y-2">
+                {aiAdvice.cards.map((c, i) => {
+                  const rec = c.recommendation?.toLowerCase();
+                  const isKeep = rec === "keep";
+                  const isDowngrade = rec === "downgrade" || rec === "consider downgrade";
+                  return (
+                    <div key={i} className={`rounded-xl border px-4 py-3 ${
+                      isKeep ? "bg-green-50 border-green-200" :
+                      isDowngrade ? "bg-red-50 border-red-200" :
+                      "bg-yellow-50 border-yellow-200"
+                    }`}>
+                      <div className="flex items-center justify-between mb-1">
+                        <span className="font-semibold text-sm text-gray-900">{c.cardName}</span>
+                        <span className={`text-xs font-bold uppercase tracking-wide ${
+                          isKeep ? "text-green-700" :
+                          isDowngrade ? "text-red-600" :
+                          "text-yellow-700"
+                        }`}>
+                          {c.recommendation}
+                        </span>
+                      </div>
+                      <p className="text-sm text-gray-600 leading-relaxed">{c.rationale}</p>
+                      {c.netROI && (
+                        <p className="text-xs text-gray-400 mt-1">{c.netROI}</p>
+                      )}
+                    </div>
+                  );
+                })}
+              </div>
+            )}
+
+            {/* Overall summary */}
+            <div className="bg-gradient-to-br from-brand-50 to-indigo-50 rounded-xl p-4">
+              <p className="text-xs font-semibold text-brand-700 uppercase tracking-wide mb-1.5">Summary</p>
+              <p className="text-sm text-gray-700 leading-relaxed">{aiAdvice.overallSummary}</p>
+            </div>
+
+            {/* Tradeoffs */}
+            {aiAdvice.tradeoffs && (
+              <div className="bg-gray-50 rounded-xl p-4">
+                <p className="text-xs font-semibold text-gray-500 uppercase tracking-wide mb-1.5">Tradeoffs to Consider</p>
+                <p className="text-sm text-gray-600 leading-relaxed">{aiAdvice.tradeoffs}</p>
+              </div>
+            )}
+
             <ConfidenceWarning confidence={aiConfidence} />
-            <p className="text-[10px] text-gray-400 mt-3">CardIQ provides information, not financial advice. Verify terms with your card issuer.</p>
+            <p className="text-[10px] text-gray-400">CardIQ provides information, not financial advice. Verify terms with your card issuer.</p>
             <ReportIssueButton context="portfolio:analysis" />
           </div>
         )}

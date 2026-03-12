@@ -114,12 +114,12 @@ export default function OptimizerPage() {
           </p>
         </div>
         <div className="card text-center">
-          <p className="text-3xl font-bold text-gray-900">
-            {transactions.filter((t) => !t.isOptimal).length}
+          <p className="text-3xl font-bold text-orange-500">
+            {formatCurrency(transactions.filter((t) => !t.isOptimal).reduce((sum, t) => sum + t.amount, 0))}
           </p>
           <p className="text-sm text-gray-500 mt-1 flex items-center justify-center gap-1">
-            Suboptimal transactions
-            <CoachingTip tip="Purchases where a different card in your wallet would have earned more rewards. Expand each transaction below for details." />
+            Suboptimal spending
+            <CoachingTip tip="Total dollar amount spent on purchases where a different card would have earned more rewards. This is your optimization opportunity." />
           </p>
         </div>
         <div className="card text-center">

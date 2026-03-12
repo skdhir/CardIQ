@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server";
-import { getSession, getPortfolioFromCookie } from "@/lib/auth";
-import { getUserCardsWithFallback, getBenefitTracking } from "@/lib/db";
+import { getSession } from "@/lib/auth";
+import { getUserCards, getBenefitTracking } from "@/lib/db";
 import { CARD_CATALOG } from "@/lib/mock-data/cards";
 import type { BenefitStatus } from "@/types";
 
@@ -10,7 +10,7 @@ export async function GET() {
   if (!session) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
 
   const tracking = getBenefitTracking(session.userId);
-  const cardIds = getUserCardsWithFallback(session.userId, getPortfolioFromCookie());
+  const cardIds = getUserCards(session.userId);
 
   const benefits = cardIds.flatMap((cardId) => {
     const card = CARD_CATALOG.find((c) => c.id === cardId);
