@@ -22,7 +22,7 @@ const EVIDENCE: Record<string, string> = {
 // Per-card, per-benefit merchant-specific evidence
 const MERCHANT_HINTS: Record<string, Record<string, string>> = {
   "amex-platinum":           { "amex-plat-uber-cash": "4 Uber charges detected", "amex-plat-airline": "Delta charge $342 detected", "amex-plat-hotel": "Amex Travel hotel booking detected", "amex-plat-clear": "CLEAR renewal charge detected", "amex-plat-digital": "Disney+ & NYT charges detected", "amex-plat-saks": "Saks purchase detected", "amex-plat-lounge": "3 lounge visits detected", "amex-plat-walmart": "Walmart+ charge detected" },
-  "chase-sapphire-reserve":  { "csr-travel-credit": "United + Uber travel charges detected", "csr-lounge": "Priority Pass visit detected", "csr-dining": "hotel booking detected", "csr-rental-car": "Hertz charge detected" },
+  "chase-sapphire-reserve":  { "csr-travel-credit": "United + Uber travel charges detected", "csr-lounge": "Priority Pass visit detected", "csr-hotel-perks": "The Edit hotel booking detected", "csr-rental-car": "Hertz charge detected" },
   "capital-one-venture-x":   { "venturex-travel-credit": "Capital One Travel booking detected", "venturex-bonus-miles": "anniversary milestone detected", "venturex-lounge": "lounge access detected" },
   "amex-gold":               { "amex-gold-uber-cash": "3 Uber Eats charges detected", "amex-gold-dining": "Grubhub & Five Guys charges detected", "amex-gold-resy": "Resy restaurant booking detected", "amex-gold-dunkin": "Dunkin' charges detected" },
   "chase-sapphire-preferred":{ "csp-hotel-credit": "Chase Travel hotel booking detected", "csp-dashpass": "DoorDash subscription detected", "csp-rental-car": "Enterprise charge detected" },

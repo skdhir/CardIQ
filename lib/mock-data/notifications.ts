@@ -38,9 +38,9 @@ export const MOCK_NOTIFICATIONS: Notification[] = [
   {
     id: "notif-005",
     type: "category-activation",
-    title: "🔔 Activate Chase Freedom Flex Q2 Categories",
-    body: "Q2 2025 bonus categories are now available: Amazon and Wholesale Clubs earn 5% (up to $1,500). Activate by June 14 at chase.com/activate.",
-    benefitId: "cff-5pct-q1",
+    title: "🔔 Activate Chase Freedom Flex Quarterly Categories",
+    body: "New quarterly bonus categories are now available — earn 5% on up to $1,500. Activate at chase.com/activate before the deadline.",
+    benefitId: "cff-5pct-quarterly",
     cardId: "chase-freedom-flex",
     createdAt: new Date(Date.now() - 3 * 24 * 60 * 60 * 1000).toISOString(), // 3 days ago
   },
