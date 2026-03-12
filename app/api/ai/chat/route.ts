@@ -79,9 +79,8 @@ export async function POST(request: Request) {
     return NextResponse.json({ reply: content.text });
   } catch (err) {
     console.error("Chat API error:", err);
-    const msg = err instanceof Error ? err.message : String(err);
     return NextResponse.json(
-      { error: "Chat unavailable", debug: msg },
+      { error: "Chat unavailable" },
       { status: 500 }
     );
   }
