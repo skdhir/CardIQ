@@ -123,6 +123,9 @@ export default function Sidebar() {
           </div>
           <span className="text-base font-bold text-gray-900">CardIQ</span>
         </div>
+        {userName && (
+          <span className="ml-auto text-sm text-gray-500">Hi, <span className="font-semibold text-gray-700">{userName}</span></span>
+        )}
       </div>
 
       {/* Mobile overlay */}
