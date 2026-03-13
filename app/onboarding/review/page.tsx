@@ -2,7 +2,7 @@
 
 import { useEffect, useState, Suspense } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
-import { ArrowRight, CheckCircle, X, Plus, ChevronDown, ChevronUp, Loader2, Sparkles } from "lucide-react";
+import { ArrowRight, CheckCircle, X, Plus, ChevronDown, ChevronUp, Loader2, Sparkles, Upload, FileText } from "lucide-react";
 import { CARD_CATALOG } from "@/lib/mock-data/cards";
 import { formatCurrency } from "@/lib/utils";
 import type { CardBenefit, CardCatalogEntry } from "@/types";
@@ -56,6 +56,9 @@ interface CardGroup {
   expanded: boolean;
   addingIds: Set<string>;
   removedIds: Set<string>;
+  statementFile: File | null;
+  uploadStatus: "idle" | "uploading" | "done" | "error";
+  uploadCount: number;
 }
 
 function ReviewBenefitsContent() {
@@ -77,7 +80,7 @@ function ReviewBenefitsContent() {
         const detected = pickDetectedBenefits(card);
         const detectedIds = new Set(detected.map((b) => b.id));
         const available = card.benefits.filter((b) => !detectedIds.has(b.id));
-        return { card, detected, available, expanded: true, addingIds: new Set<string>(), removedIds: new Set<string>() };
+        return { card, detected, available, expanded: true, addingIds: new Set<string>(), removedIds: new Set<string>(), statementFile: null, uploadStatus: "idle" as const, uploadCount: 0 };
       });
 
     setCardGroups(groups);
@@ -101,6 +104,17 @@ function ReviewBenefitsContent() {
       else addingIds.add(benefitId);
       return { ...g, addingIds };
     }));
+  }
+
+  function handleFileSelect(cardId: string, file: File | null) {
+    if (file) {
+      const isPDF = file.type === "application/pdf" || file.name.toLowerCase().endsWith(".pdf");
+      const isCSV = file.type === "text/csv" || file.name.toLowerCase().endsWith(".csv");
+      if (!isPDF && !isCSV) return;
+    }
+    setCardGroups((prev) => prev.map((g) =>
+      g.card.id === cardId ? { ...g, statementFile: file, uploadStatus: "idle" as const, uploadCount: 0 } : g
+    ));
   }
 
   function toggleExpanded(cardId: string) {
@@ -152,6 +166,29 @@ function ReviewBenefitsContent() {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ status: "unused", amountUsed: 0 }),
       });
+    }
+
+    // Upload any attached statement files
+    for (const g of cardGroups) {
+      if (g.statementFile) {
+        setCardGroups((prev) => prev.map((gg) =>
+          gg.card.id === g.card.id ? { ...gg, uploadStatus: "uploading" as const } : gg
+        ));
+        try {
+          const formData = new FormData();
+          formData.append("cardId", g.card.id);
+          formData.append("file", g.statementFile);
+          const uploadRes = await fetch("/api/transactions/upload", { method: "POST", body: formData });
+          const uploadData = await uploadRes.json();
+          if (uploadRes.ok) {
+            setCardGroups((prev) => prev.map((gg) =>
+              gg.card.id === g.card.id ? { ...gg, uploadStatus: "done" as const, uploadCount: uploadData.imported ?? 0 } : gg
+            ));
+          }
+        } catch {
+          // Non-blocking — statement upload is optional
+        }
+      }
     }
 
     router.push("/dashboard");
@@ -338,6 +375,41 @@ function ReviewBenefitsContent() {
                           )}
                         </div>
                       )}
+
+                      {/* Optional statement upload */}
+                      <div className="border-t border-gray-100 px-4 py-3">
+                        {group.statementFile ? (
+                          <div className="flex items-center gap-2">
+                            <FileText className="w-4 h-4 text-brand-500 shrink-0" />
+                            <div className="flex-1 min-w-0">
+                              <p className="text-xs font-medium text-gray-700 truncate">{group.statementFile.name}</p>
+                              {group.uploadStatus === "done" && (
+                                <p className="text-xs text-green-600">{group.uploadCount} transactions imported</p>
+                              )}
+                              {group.uploadStatus === "uploading" && (
+                                <p className="text-xs text-brand-600 flex items-center gap-1"><Loader2 className="w-3 h-3 animate-spin" />Processing...</p>
+                              )}
+                            </div>
+                            <button
+                              onClick={() => handleFileSelect(card.id, null)}
+                              className="text-gray-400 hover:text-red-500 transition-colors"
+                            >
+                              <X className="w-3.5 h-3.5" />
+                            </button>
+                          </div>
+                        ) : (
+                          <label className="flex items-center gap-2 text-xs text-gray-400 hover:text-brand-600 cursor-pointer transition-colors">
+                            <Upload className="w-3.5 h-3.5" />
+                            <span>Attach a statement (PDF/CSV) — optional</span>
+                            <input
+                              type="file"
+                              accept=".pdf,.csv"
+                              className="hidden"
+                              onChange={(e) => handleFileSelect(card.id, e.target.files?.[0] ?? null)}
+                            />
+                          </label>
+                        )}
+                      </div>
                     </div>
                   )}
                 </div>

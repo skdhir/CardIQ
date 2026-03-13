@@ -1,13 +1,14 @@
 "use client";
 
-import { useEffect, useState, useRef } from "react";
-import { useRouter } from "next/navigation";
+import { useEffect, useState, useRef, Suspense } from "react";
+import { useRouter, useSearchParams } from "next/navigation";
 import type { CardCatalogEntry } from "@/types";
 import { Upload, FileText, Loader2, CheckCircle, AlertTriangle, ArrowRight } from "lucide-react";
 import { formatCurrency } from "@/lib/utils";
 
-export default function UploadPage() {
+function UploadPageContent() {
   const router = useRouter();
+  const searchParams = useSearchParams();
   const fileInputRef = useRef<HTMLInputElement>(null);
   const [cards, setCards] = useState<CardCatalogEntry[]>([]);
   const [selectedCard, setSelectedCard] = useState("");
@@ -27,7 +28,12 @@ export default function UploadPage() {
       .then((r) => r.json())
       .then(({ cards: c }) => {
         setCards(c ?? []);
-        if (c?.length > 0) setSelectedCard(c[0].id);
+        const preselect = searchParams.get("card");
+        if (preselect && c?.some((card: CardCatalogEntry) => card.id === preselect)) {
+          setSelectedCard(preselect);
+        } else if (c?.length > 0) {
+          setSelectedCard(c[0].id);
+        }
         setLoading(false);
       });
   }, []);
@@ -259,9 +265,37 @@ export default function UploadPage() {
         </div>
       )}
 
+      {/* Sample files for demo */}
+      <div className="card">
+        <p className="text-xs font-semibold text-gray-500 uppercase tracking-wide mb-2">Sample Statements (for testing)</p>
+        <div className="flex flex-wrap gap-2">
+          <a href="/samples/amex-platinum-statement.csv" download className="text-xs text-brand-600 hover:text-brand-700 underline">
+            Amex Platinum CSV
+          </a>
+          <a href="/samples/chase-sapphire-reserve-statement.csv" download className="text-xs text-brand-600 hover:text-brand-700 underline">
+            Chase Sapphire Reserve CSV
+          </a>
+          <a href="/samples/amex-gold-statement.csv" download className="text-xs text-brand-600 hover:text-brand-700 underline">
+            Amex Gold CSV
+          </a>
+        </div>
+      </div>
+
       <p className="text-[10px] text-gray-400 text-center">
         Your statement is processed by Claude AI for transaction extraction only. CardIQ does not store the original PDF/CSV file.
       </p>
     </div>
+  );
+}
+
+export default function UploadPage() {
+  return (
+    <Suspense fallback={
+      <div className="flex items-center justify-center h-64">
+        <Loader2 className="w-6 h-6 text-brand-500 animate-spin" />
+      </div>
+    }>
+      <UploadPageContent />
+    </Suspense>
   );
 }

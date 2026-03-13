@@ -1,11 +1,13 @@
 "use client";
 
 import { useState } from "react";
+import Link from "next/link";
 import type { CardCatalogEntry, BenefitStatus } from "@/types";
 import BenefitItem from "./BenefitItem";
 import BenefitDetailModal from "./BenefitDetailModal";
 import ProgressBar from "@/components/ui/ProgressBar";
 import { formatCurrency } from "@/lib/utils";
+import { Upload } from "lucide-react";
 
 interface BenefitState {
   status: BenefitStatus;
@@ -62,11 +64,20 @@ export default function CardBenefitCard({
               {card.annualFee === 0 ? "No annual fee" : `$${card.annualFee}/yr annual fee`}
             </p>
           </div>
-          <div className="text-right">
-            <p className="text-xs text-gray-400 mb-0.5">Net ROI</p>
-            <p className={`text-lg font-bold ${netROI >= 0 ? "text-green-600" : "text-red-500"}`}>
-              {netROI >= 0 ? "+" : ""}{formatCurrency(netROI)}
-            </p>
+          <div className="text-right space-y-1.5">
+            <div>
+              <p className="text-xs text-gray-400 mb-0.5">Net ROI</p>
+              <p className={`text-lg font-bold ${netROI >= 0 ? "text-green-600" : "text-red-500"}`}>
+                {netROI >= 0 ? "+" : ""}{formatCurrency(netROI)}
+              </p>
+            </div>
+            <Link
+              href={`/upload?card=${card.id}`}
+              className="inline-flex items-center gap-1 text-[11px] text-gray-400 hover:text-brand-600 transition-colors"
+            >
+              <Upload className="w-3 h-3" />
+              Upload Statement
+            </Link>
           </div>
         </div>
 
