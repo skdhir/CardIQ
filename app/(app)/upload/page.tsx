@@ -278,6 +278,12 @@ function UploadPageContent() {
           <a href="/samples/amex-gold-statement.csv" download className="text-xs text-brand-600 hover:text-brand-700 underline">
             Amex Gold CSV
           </a>
+          <a href="/samples/capital-one-venture-x-statement.csv" download className="text-xs text-brand-600 hover:text-brand-700 underline">
+            Capital One Venture X CSV
+          </a>
+          <a href="/samples/chase-freedom-unlimited-statement.csv" download className="text-xs text-brand-600 hover:text-brand-700 underline">
+            Chase Freedom Unlimited CSV
+          </a>
         </div>
       </div>
 

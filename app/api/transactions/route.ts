@@ -10,15 +10,18 @@ export async function GET(request: Request) {
   const category = searchParams.get("category");
   const optimal = searchParams.get("optimal");
 
-  // Try to return real uploaded transactions for the logged-in user
+  // Return uploaded transactions for real users, mock data only for demo accounts
   const session = await getSession();
-  let transactions = MOCK_TRANSACTIONS;
+  let transactions: typeof MOCK_TRANSACTIONS = [];
 
   if (session) {
     const raw = getRawTransactions(session.userId);
     if (raw.length > 0) {
       const userCardIds = getUserCards(session.userId);
       transactions = enrichTransactions(raw, userCardIds);
+    } else if (session.userId.startsWith("demo-")) {
+      // Demo accounts get mock data as a fallback
+      transactions = MOCK_TRANSACTIONS;
     }
   }
 

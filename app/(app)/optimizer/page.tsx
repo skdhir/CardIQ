@@ -212,8 +212,21 @@ export default function OptimizerPage() {
         )}
       </div>
 
+      {/* Empty state — no transactions */}
+      {transactions.length === 0 && (
+        <div className="card text-center py-10">
+          <Upload className="w-10 h-10 text-gray-300 mx-auto mb-3" />
+          <h3 className="text-base font-semibold text-gray-900 mb-1">No transaction data yet</h3>
+          <p className="text-sm text-gray-400 mb-4">Upload a credit card statement to see spending analysis and optimization opportunities.</p>
+          <Link href="/upload" className="btn-primary inline-flex items-center gap-2">
+            <Upload className="w-4 h-4" />
+            Upload Statement
+          </Link>
+        </div>
+      )}
+
       {/* Category breakdown */}
-      <div className="card">
+      {transactions.length > 0 && <div className="card">
         <h2 className="text-sm font-semibold text-gray-900 mb-3 flex items-center gap-1.5">
           Spending by Category (90 days)
           <CoachingTip tip="Your spending broken down by category. Red amounts show rewards you missed — categories with the highest red values are where card optimization matters most." />
@@ -243,10 +256,10 @@ export default function OptimizerPage() {
               </div>
             ))}
         </div>
-      </div>
+      </div>}
 
       {/* Transaction feed */}
-      <div className="card">
+      {transactions.length > 0 && <div className="card">
         <div className="flex items-center justify-between mb-4">
           <h2 className="text-sm font-semibold text-gray-900">Recent Transactions</h2>
           <div className="flex gap-2">
@@ -339,7 +352,7 @@ export default function OptimizerPage() {
             </div>
           ))}
         </div>
-      </div>
+      </div>}
     </div>
   );
 }
