@@ -14,11 +14,13 @@ import {
   LogOut,
   Menu,
   X,
+  Upload,
 } from "lucide-react";
 
 const navItems = [
   { href: "/dashboard", label: "Dashboard", icon: LayoutDashboard },
   { href: "/optimizer", label: "Optimizer", icon: Zap },
+  { href: "/upload", label: "Upload Statement", icon: Upload },
   { href: "/notifications", label: "Notifications", icon: Bell },
   { href: "/portfolio", label: "Portfolio", icon: PieChart },
   { href: "/profile", label: "Profile", icon: UserCircle },

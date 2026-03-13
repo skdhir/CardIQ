@@ -3,7 +3,8 @@
 import { useEffect, useState } from "react";
 import type { Transaction, CardCatalogEntry } from "@/types";
 import { formatCurrency, formatDate } from "@/lib/utils";
-import { CheckCircle, AlertTriangle, Loader2, Sparkles, ChevronDown, ChevronUp } from "lucide-react";
+import { CheckCircle, AlertTriangle, Loader2, Sparkles, ChevronDown, ChevronUp, Upload } from "lucide-react";
+import Link from "next/link";
 import ConfidenceWarning from "@/components/ui/ConfidenceWarning";
 import ReportIssueButton from "@/components/ui/ReportIssueButton";
 import CoachingTip from "@/components/ui/CoachingTip";
@@ -99,9 +100,18 @@ export default function OptimizerPage() {
 
   return (
     <div className="space-y-6">
-      <div>
-        <h1 className="text-2xl font-bold text-gray-900">Purchase Optimizer</h1>
-        <p className="text-sm text-gray-500 mt-0.5">See where you&apos;re leaving rewards on the table</p>
+      <div className="flex items-start justify-between">
+        <div>
+          <h1 className="text-2xl font-bold text-gray-900">Purchase Optimizer</h1>
+          <p className="text-sm text-gray-500 mt-0.5">See where you&apos;re leaving rewards on the table</p>
+        </div>
+        <Link
+          href="/upload"
+          className="btn-secondary text-xs flex items-center gap-1.5"
+        >
+          <Upload className="w-3 h-3" />
+          Upload Statement
+        </Link>
       </div>
 
       {/* Summary banner */}

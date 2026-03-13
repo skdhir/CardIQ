@@ -251,3 +251,28 @@ export function upsertBenefitTracking(
   };
   writeUserData(userId, data);
 }
+
+// ─── Raw transaction storage (file-only — too large for cookies) ────────────
+// Stored in a separate file so cookie persistence isn't affected.
+
+import type { RawTransaction } from "@/lib/rewards";
+
+function userTxnsPath(userId: string) {
+  return path.join(DATA_DIR, `user_${userId}_txns.json`);
+}
+
+export function getRawTransactions(userId: string): RawTransaction[] {
+  ensureDir();
+  const p = userTxnsPath(userId);
+  if (!fs.existsSync(p)) return [];
+  try {
+    return JSON.parse(fs.readFileSync(p, "utf-8"));
+  } catch {
+    return [];
+  }
+}
+
+export function saveRawTransactions(userId: string, txns: RawTransaction[]) {
+  ensureDir();
+  fs.writeFileSync(userTxnsPath(userId), JSON.stringify(txns, null, 2));
+}
