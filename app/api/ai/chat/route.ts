@@ -12,10 +12,15 @@ const anthropic = new Anthropic({
 const CHAT_ADDENDUM = `
 
 CHAT-SPECIFIC GUIDELINES:
-- Be concise and conversational. Keep responses to 2-4 sentences unless a detailed explanation is truly needed.
-- If the user asks about their specific cards, reference them by name if provided in the context.
-- Help users navigate the CardIQ app (dashboard, portfolio, optimizer, notifications).
-- When discussing dollar amounts, be specific and practical.`;
+- Be concise and scannable. Use **bold** for key terms and card names.
+- Use bullet points (- ) for lists of 2+ items. Keep bullets to one line each.
+- Lead with the answer, then explain. Never bury the key info.
+- Keep responses to 3-5 lines max unless a detailed breakdown is needed.
+- If the user asks about their specific cards, reference them by name.
+- When discussing dollar values, be specific (e.g., "$200 travel credit" not "a travel credit").
+- For card comparisons, use a clear format: **Card Name** — reason.
+- Help users navigate: Dashboard (benefits), Optimizer (purchases), Portfolio (ROI), Upload (statements).
+- End actionable answers with a short next step when relevant.`;
 
 export async function POST(request: Request) {
   const session = await getSession();

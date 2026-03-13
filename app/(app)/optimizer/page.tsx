@@ -25,7 +25,13 @@ export default function OptimizerPage() {
   const [loading, setLoading] = useState(true);
   const [filter, setFilter] = useState<"all" | "suboptimal">("all");
   const [aiQuery, setAiQuery] = useState("");
-  const [aiResult, setAiResult] = useState("");
+  interface AIOptResult {
+    recommendedCard: string;
+    rationale: string;
+    tradeoffs: string | null;
+    estimatedImpact: string;
+  }
+  const [aiResult, setAiResult] = useState<AIOptResult | string | null>(null);
   const [aiConfidence, setAiConfidence] = useState<"HIGH" | "MEDIUM" | "LOW">("HIGH");
   const [aiLoading, setAiLoading] = useState(false);
   const [expandedId, setExpandedId] = useState<string | null>(null);
@@ -60,7 +66,7 @@ export default function OptimizerPage() {
     e.preventDefault();
     if (!aiQuery.trim()) return;
     setAiLoading(true);
-    setAiResult("");
+    setAiResult(null);
 
     const cardsForAI = userCards.map((c) => ({
       id: c.id,
@@ -78,11 +84,14 @@ export default function OptimizerPage() {
       }),
     });
     const data = await res.json();
-    // Handle structured CardRecommendation response
     if (data.recommendedCard) {
       if (data.confidence) setAiConfidence(data.confidence);
-      const impact = data.estimatedImpact ? `\n${data.estimatedImpact}` : "";
-      setAiResult(`Use your ${data.recommendedCard}. ${data.rationale}${impact}`);
+      setAiResult({
+        recommendedCard: data.recommendedCard,
+        rationale: data.rationale,
+        tradeoffs: data.tradeoffs,
+        estimatedImpact: data.estimatedImpact,
+      });
     } else {
       setAiConfidence("LOW");
       setAiResult(data.recommendation ?? "Unable to get a recommendation.");
@@ -165,10 +174,39 @@ export default function OptimizerPage() {
           </button>
         </form>
         {aiResult && (
-          <div className="mt-3 bg-brand-50 rounded-xl p-3 text-sm text-gray-700 leading-relaxed">
-            {aiResult}
+          <div className="mt-3 space-y-3">
+            {typeof aiResult === "object" ? (
+              <>
+                {/* Recommended card */}
+                <div className="bg-green-50 border border-green-200 rounded-xl px-4 py-3">
+                  <div className="flex items-center justify-between mb-1.5">
+                    <span className="text-xs font-bold text-green-700 uppercase tracking-wide">Best Card</span>
+                    {aiResult.estimatedImpact && (
+                      <span className="text-xs font-semibold text-green-600 bg-green-100 px-2 py-0.5 rounded-full">
+                        {aiResult.estimatedImpact}
+                      </span>
+                    )}
+                  </div>
+                  <p className="text-base font-semibold text-gray-900">{aiResult.recommendedCard}</p>
+                  <p className="text-sm text-gray-600 mt-1 leading-relaxed">{aiResult.rationale}</p>
+                </div>
+
+                {/* Tradeoffs */}
+                {aiResult.tradeoffs && (
+                  <div className="bg-gray-50 rounded-xl px-4 py-3">
+                    <p className="text-xs font-semibold text-gray-500 uppercase tracking-wide mb-1">Tradeoff</p>
+                    <p className="text-sm text-gray-600 leading-relaxed">{aiResult.tradeoffs}</p>
+                  </div>
+                )}
+              </>
+            ) : (
+              <div className="bg-brand-50 rounded-xl p-3 text-sm text-gray-700 leading-relaxed">
+                {aiResult}
+              </div>
+            )}
+
             <ConfidenceWarning confidence={aiConfidence} />
-            <p className="text-[10px] text-gray-400 mt-2">CardIQ provides information, not financial advice. Verify terms with your card issuer.</p>
+            <p className="text-[10px] text-gray-400">CardIQ provides information, not financial advice. Verify terms with your card issuer.</p>
             <ReportIssueButton context={`optimizer:${aiQuery}`} />
           </div>
         )}
