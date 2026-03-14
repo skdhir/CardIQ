@@ -176,6 +176,15 @@ CardIQ assembles a structured JSON payload from Plaid transaction data, the veri
       "cardUsed": "amex-gold"
     }
   ],
+  "rawTransactions": [
+    {
+      "date": "2026-02-15",
+      "merchant": "Whole Foods Market",
+      "amount": 87.50,
+      "source": "uploaded_statement",
+      "cardId": "amex-gold"
+    }
+  ],
   "dataFreshness": {
     "plaidLastSync": "2026-03-09T08:00:00Z",
     "cardTermsDBVersion": "v2.4 (2026-03-01)"
@@ -236,8 +245,9 @@ All AI responses conform to the following JSON schema. The backend validates res
 |------|--------|----------------|
 | 1 — Sign Up | User creates account (email + password) | Account provisioned in secure data store |
 | 2 — Add Cards | User selects cards from top-20 list OR connects via Plaid | System maps each card to verified benefit catalog |
-| 3 — Benefit Scan | Automatic | System builds personalized benefit map: used, unused, partial, expired |
-| 4 — First Dashboard | Automatic | User sees benefits dashboard with capture rate, unused credits, expiring perks, and annual fee ROI — all within 5 minutes |
+| 3 — Upload Statements (Optional) | User can attach PDF or CSV bank statements per card during onboarding review | Claude Document Understanding API extracts and categorizes transactions from uploaded statements. Merchants are mapped to spending categories and enriched with rewards optimization data. |
+| 4 — Benefit Scan | Automatic | System builds personalized benefit map: used, unused, partial, expired |
+| 5 — First Dashboard | Automatic | User sees benefits dashboard with capture rate, unused credits, expiring perks, and annual fee ROI — all within 5 minutes |
 
 ### 5.2 Interaction Patterns
 
@@ -247,6 +257,8 @@ All AI responses conform to the following JSON schema. The backend validates res
 | **Purchase Optimizer** | Recent transactions annotated with optimal vs. actual card used. "Ask AI" panel for real-time queries. | AI recommends best card for a given merchant with rationale, confidence, and impact |
 | **Portfolio Strategy** | Per-card ROI view: annual fee vs. captured value, capture rate, keep/downgrade/evaluate badge. | AI provides holistic portfolio advice with per-card recommendations |
 | **Notifications** | Push alerts for expiring credits, quarterly category activations, annual fee renewals. | Rules-based (not AI) — deterministic triggers based on benefit calendar |
+| **Statement Upload** | Upload PDF or CSV bank statements per card. AI extracts transactions, categorizes merchants, and calculates optimal card for each purchase. | AI parses statements using Claude Document Understanding (PDF) or text extraction (CSV), maps merchants to spending categories, and enriches with rewards optimization data. |
+| **AI Chat Support** | Floating chat widget available on all pages. Natural language Q&A about cards, benefits, and optimization. | AI responds with formatted, concise guidance using the same 3-tier instruction hierarchy. Responses use markdown-style formatting (bold, bullets) for readability. |
 
 ### 5.3 Confidence Communication
 
@@ -282,6 +294,13 @@ USER SESSION START
       Card terms lookup (verified DB) + benefit tracking state
       Transaction history (Plaid or manual import)
       Data freshness timestamps attached
+      |
+[2b] STATEMENT UPLOAD (Optional)
+      User uploads PDF or CSV bank statement
+      Claude Document Understanding extracts transactions
+      Transactions categorized by merchant → spending category
+      Enriched with rewards rate data per card
+      Stored as raw transactions for the user
       |
 [3] USER REQUEST (Tier 3 — User Message)
       Natural language query from user
@@ -442,6 +461,8 @@ The platform provides **informational decision support only**. This classificati
 - Data retention follows a **90-day rolling window** aligned with CCPA requirements.
 - CardIQ does **not** sell, share, or monetize user financial data.
 - Plaid's data practices are subject to the FTC's ongoing oversight; CardIQ monitors compliance updates and adjusts access patterns accordingly.
+
+For statement uploads, CardIQ processes PDF and CSV files through the Claude API for transaction extraction. Statement files are not permanently stored — only the extracted transaction data (date, merchant, amount, category) is retained. No account numbers, routing numbers, or other sensitive financial identifiers are extracted or stored from uploaded statements.
 
 ### 10.4 ECOA / Fair Lending Considerations
 

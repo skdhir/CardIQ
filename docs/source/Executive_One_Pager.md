@@ -21,6 +21,7 @@ CardIQ is an AI-powered platform that helps consumers extract the full value fro
 - **Benefits Dashboard:** Real-time tracking of every benefit across all cards — what's been used, what's available, what's expiring. Dollar values, progress bars, and capture rates per card and across the portfolio.
 - **Purchase Optimizer:** AI-powered recommendation for which card to use at every merchant, based on verified rewards rates. Shows the dollar impact of suboptimal card usage.
 - **Portfolio Strategy:** Annual fee ROI analysis per card — benefits captured vs. fee paid. Keep/downgrade/evaluate recommendation with plain-language rationale.
+- **Statement Upload:** Upload PDF or CSV bank statements to import real transaction history. AI extracts, categorizes, and analyzes purchases to show exactly where rewards are being left on the table.
 
 The AI engine (Claude API) reasons across the user's full card portfolio, grounded in a **verified database of the top 20 U.S. consumer credit cards** with benefit terms updated weekly.
 
@@ -44,3 +45,4 @@ The AI engine (Claude API) reasons across the user's full card portfolio, ground
 | Calculate annual fee ROI with plain-language rationale | Offer credit repair or dispute services |
 | Alert users to expiring credits and activation deadlines | Guarantee specific financial outcomes |
 | Present information from verified card terms | Make automated decisions without user confirmation |
+| Import transactions from uploaded bank statements (PDF/CSV) | Store or retain uploaded statement files |

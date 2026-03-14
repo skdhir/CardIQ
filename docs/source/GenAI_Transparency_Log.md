@@ -83,6 +83,30 @@ This log documents all AI tools used in the development of the CardIQ platform a
 - **Human input:** Decision to create submission-ready package, requirement for Q&A preparation document
 - **AI contribution:** Document finalization, deliverable organization, Q&A prep content
 
+### 3.8 Statement Upload Feature
+
+**Prompt (Claude Code, statement upload session):**
+> "Build a complete statement upload feature: accept PDF or CSV bank statements, use Claude Document Understanding to extract and categorize transactions, show results in the Purchase Optimizer. Support both onboarding (optional per-card upload) and dashboard (per-card upload links). Create sample CSV files for demo."
+
+- **Human input:** Decision to support PDF + CSV, requirement for per-card upload during onboarding and on dashboard, sample CSV specification
+- **AI contribution:** Upload API endpoint with Claude Document Understanding integration, 3-step upload UI page, FormData file handling, transaction extraction prompt, 5 sample CSV statement files, per-card upload buttons on dashboard and onboarding review page
+
+### 3.9 AI Response Formatting & Chat Support
+
+**Prompt (Claude Code, AI formatting session):**
+> "The AI responses in chat and optimizer are not user-friendly — they're walls of text. Make them digestible with proper formatting. The chat widget already works with Claude but outputs need to be readable with bold, bullets, and clear structure."
+
+- **Human input:** Feedback that AI responses were "overwhelming" and "not good looking", requirement to match app's color scheme, decision to keep chat as floating widget
+- **AI contribution:** AIResponse component (lightweight markdown renderer for bold, bullets, numbered lists, code), structured optimizer response card with Best Card / Tradeoffs sections, CHAT_ADDENDUM prompt for concise formatting, integration across chat widget and optimizer
+
+### 3.10 Realistic User Journey & Data Isolation
+
+**Prompt (Claude Code, data isolation session):**
+> "After adding a card, it's magically showing transactions — it should ask to upload CSV and then show accordingly. Real users should not see mock data."
+
+- **Human input:** Identification of phantom transaction bug, requirement that only demo accounts see mock data
+- **AI contribution:** Modified transaction API to check for demo account prefix before falling back to mock data, empty state UI with upload CTA in optimizer, conditional rendering of category breakdown
+
 ---
 
 ## 4. Human Authorship vs. AI-Generated Content
@@ -112,6 +136,10 @@ This log documents all AI tools used in the development of the CardIQ platform a
 | RACI ownership matrix | **Human** | Human defined all roles and responsibilities |
 | Reproducibility & variance analysis | Human + AI | Human directed testing methodology; AI documented results |
 | All final markdown deliverables | AI (human-supervised) | Claude Code drafted; student reviewed and approved |
+| Statement upload feature (PDF/CSV via Claude) | AI (human-supervised) | Human specified requirements; AI implemented upload API, extraction prompt, UI |
+| AIResponse markdown renderer component | AI (human-supervised) | Human identified UX problem; AI created component and integrated |
+| Sample CSV statement files (5 files) | Human + AI | Human specified card/transaction requirements; AI generated realistic transaction data |
+| Transaction data isolation (demo vs. real users) | Human + AI | Human identified bug; AI implemented fix with demo-prefix check |
 | This transparency log | Human + AI | Human defined categories; AI drafted; human reviewed |
 
 ---

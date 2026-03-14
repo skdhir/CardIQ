@@ -22,9 +22,9 @@ AI for Financial Services — eMBA Capstone — March 2026
 - **Source Code**: https://github.com/skdhir/CardIQ
 - **Tech Stack**: Next.js 14 (App Router), TypeScript, File-based JSON Store, Claude API (`claude-sonnet-4-6`), AWS Amplify
 - **Demo Accounts**:
-  - `sarah.chen@demo.com` / `demo123` — Portfolio evaluator (Amex Platinum + CSR + CFU)
-  - `marcus.johnson@demo.com` / `demo123` — New cardholder (Chase Sapphire Preferred)
-  - `emma.davis@demo.com` / `demo123` — Unaware cardholder (Amex Gold + Capital One Venture X)
+  - `sarah.chen@demo.com` / `Demo1234!` — Sarah Chen (Amex Gold, Citi Strata Premier, Marriott Bonvoy Boundless)
+  - `marcus.johnson@demo.com` / `Demo1234!` — Marcus Johnson (Amex Platinum, Chase Sapphire Reserve, Capital One Savor, Wells Fargo Active Cash, Delta SkyMiles Gold, Discover It, Macy's)
+  - `emily.rodriguez@demo.com` / `Demo1234!` — Emily Rodriguez (Amex Gold, Chase Sapphire Reserve)
 
 ## Key Architecture Highlights
 
@@ -35,12 +35,15 @@ AI for Financial Services — eMBA Capstone — March 2026
 5. **Disclaimers on every AI output** — "CardIQ provides information, not financial advice"
 6. **Human-in-the-Loop** — Confidence badges (HIGH/MEDIUM/LOW), "Report an Issue" on all AI surfaces, named operational roles with SLAs
 7. **10 Evaluation Test Cases** — Including documented v1 failure → v2 remediation, 3 adversarial tests, reproducibility analysis
+8. **Statement Upload** — PDF/CSV via Claude Document Understanding
+9. **AI Chat Support** — Floating widget on all pages
+10. **Sample CSV Statements** — Pre-built demo statements for testing
 
 ## Rubric Alignment
 
 | Category | Points | Evidence |
 |----------|--------|----------|
-| Problem Definition & Use-Case Clarity | /10 | 3 named personas (Marcus, Emma, Priya), $300-$600 problem quantified, realistic financial context |
+| Problem Definition & Use-Case Clarity | /10 | 3 named personas (Sarah, Marcus, Emily), $300-$600 problem quantified, realistic financial context |
 | System & Instruction Design | /15 | 3-tier hierarchy in `lib/claude.ts` + System Design Packet Sections 1-2. All 4 endpoints share same SYSTEM_INSTRUCTION |
 | Language & Guardrails | /15 | 8 acceptable/prohibited example pairs, prohibited terms list, tone-by-segment table, advice vs. information distinction |
 | Evaluation Framework | /20 | 10 test cases (4+ required), success/failure criteria tables, verbatim API responses, documented failure + iteration (TC-7), reproducibility analysis |

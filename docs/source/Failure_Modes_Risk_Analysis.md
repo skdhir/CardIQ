@@ -165,6 +165,34 @@ Per course requirements, this analysis explicitly addresses **user misuse risks*
 
 ---
 
+### FM-11 — Incorrect Transaction Categorization from Uploaded Statements
+
+| Attribute | Detail |
+|-----------|--------|
+| **Category** | Technical Failure |
+| **Severity** | MEDIUM |
+| **Likelihood** | MEDIUM (merchant names in statements are often abbreviated or unclear) |
+| **Description** | Claude AI misclassifies a merchant's spending category when parsing an uploaded bank statement. This leads to incorrect optimal card recommendations for those transactions. |
+| **Example** | User uploads a PDF statement containing "AMZN MKTP US*AB1CD2E" — Claude categorizes this as "shopping" but the purchase was actually for groceries via Amazon Fresh. The optimizer recommends the wrong card for this transaction. |
+| **Mitigation** | 1. Post-upload review screen shows all extracted transactions with categories for user verification before import. 2. Users can edit categories on individual transactions. 3. Confidence level on statement-derived recommendations reflects source quality (uploaded statements get MEDIUM confidence by default). 4. Common merchant abbreviation patterns mapped in extraction prompt. |
+| **Residual Risk** | Some merchant codes are genuinely ambiguous. User review is the final quality gate. |
+
+---
+
+### FM-12 — PII Exposure in Uploaded Statement Files
+
+| Attribute | Detail |
+|-----------|--------|
+| **Category** | Privacy / Security Risk |
+| **Severity** | HIGH |
+| **Likelihood** | MEDIUM (bank statements contain account numbers, addresses, SSN fragments) |
+| **Description** | User uploads a bank statement PDF containing sensitive PII (full account numbers, Social Security number, home address). This data is sent to the Claude API for processing, creating a data exposure vector. |
+| **Example** | User uploads their full Chase statement PDF which includes their account number, home address, and last four SSN digits on the first page. All of this is sent to Claude for transaction extraction. |
+| **Mitigation** | 1. The extraction prompt instructs Claude to extract ONLY transaction data (date, merchant, amount) and ignore all other content. 2. Raw statement files are processed in-memory and not permanently stored. 3. Only extracted transaction records (date, merchant, amount, category) are persisted. 4. File size limited to 10MB to prevent large document uploads. 5. Upload page includes a privacy notice: "Your statement is processed securely and not stored. Only transaction details are retained." |
+| **Residual Risk** | Data is transmitted to Anthropic's API for processing. Anthropic's data handling policies apply. In production, a self-hosted extraction pipeline would eliminate third-party data transmission. |
+
+---
+
 ## 3. Risk Summary Matrix
 
 | ID | Failure Mode | Severity | Likelihood | Mitigated? |
@@ -179,6 +207,8 @@ Per course requirements, this analysis explicitly addresses **user misuse risks*
 | FM-08 | Reputational risk (shared recs) | MEDIUM | MEDIUM | Partial — footer disclaimers |
 | FM-09 | Wrong card selected at onboarding | HIGH | LOW-MED | Yes — confirmation step + Plaid auto-ID |
 | FM-10 | Regulatory enforcement / classification change | CRITICAL | LOW | Partial — informational framing + disclaimers + legal review |
+| FM-11 | Incorrect transaction categorization | MEDIUM | MEDIUM | Partial — user review + category editing |
+| FM-12 | PII exposure in uploaded statements | HIGH | MEDIUM | Yes — extraction-only prompt + no file storage + privacy notice |
 
 ---
 
